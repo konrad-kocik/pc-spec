@@ -71,6 +71,11 @@ def test_add_component_when_component_is_there_then_it_is_not_replaced(pc_with_c
     assert pc_with_cpu.components == {cpu: cpu_intel_spec}
 
 
+def test_add_component_with_default_spec(pc, cpu):
+    pc.add_component(category=cpu)
+    assert pc.components == {cpu: {}}
+
+
 def test_remove_component_when_component_not_there_then_nothing_is_removed(pc_with_cpu, cpu, cpu_intel_spec, ram):
     pc_with_cpu.remove_component(category=ram)
     assert pc_with_cpu.components == {cpu: cpu_intel_spec}
@@ -89,6 +94,11 @@ def test_swap_component_when_component_not_there_then_nothing_is_swapped(pc_with
 def test_swap_component_when_component_is_there_then_it_is_swapped(pc_with_cpu, cpu, cpu_amd_spec):
     pc_with_cpu.swap_component(category=cpu, spec=cpu_amd_spec)
     assert pc_with_cpu.components == {cpu: cpu_amd_spec}
+
+
+def test_swap_component_with_default_spec(pc_with_cpu, cpu):
+    pc_with_cpu.swap_component(category=cpu)
+    assert pc_with_cpu.components == {cpu: {}}
 
 
 def test_update_component_when_component_not_there_then_nothing_is_updated(pc, cpu, cpu_freq):
