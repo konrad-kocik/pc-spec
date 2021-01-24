@@ -41,6 +41,17 @@ def cpu_amd_spec():
 
 
 @fixture
+def pc_with_mobo(pc, mobo):
+    pc.add_component(category=mobo, spec={})
+    return pc
+
+
+@fixture
+def mobo():
+    return 'mobo'
+
+
+@fixture
 def ram():
     return 'ram'
 
@@ -86,10 +97,11 @@ def test_update_component_when_component_not_there_then_nothing_is_updated(pc, c
     assert pc.components == {}
 
 
-def test_update_component_when_param_not_there_then_it_is_added(pc_with_cpu, cpu, cpu_intel_spec_with_freq, cpu_freq):
-    freq_name, freq_value = cpu_freq
-    pc_with_cpu.update_component(category=cpu, param_name=freq_name, param_value=freq_value)
-    assert pc_with_cpu.components == {cpu: cpu_intel_spec_with_freq}
+def test_update_component_when_param_not_there_then_it_is_added(pc_with_mobo, mobo):
+    format_name = 'format'
+    format_value = 'ATX'
+    pc_with_mobo.update_component(category=mobo, param_name=format_name, param_value=format_value)
+    assert pc_with_mobo.components == {mobo: {format_name: format_value}}
 
 
 def test_update_component_when_param_is_there_then_it_is_updated(pc_with_cpu, cpu, cpu_intel_spec_with_freq, cpu_freq):

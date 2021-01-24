@@ -23,6 +23,4 @@ class PC:
             self.__components[category][param_name] = param_value
 
     def __component_exists(self, category):
-        if self.__components.get(category):
-            return True
-        return False
+        return category in self.__components.keys()
