@@ -9,8 +9,8 @@ def pc():
 
 
 @fixture
-def pc_with_cpu(pc, cpu, cpu_spec):
-    pc.add_component(name=cpu, spec=cpu_spec)
+def pc_with_cpu(pc, cpu, cpu_intel_spec):
+    pc.add_component(category=cpu, spec=cpu_intel_spec)
     return pc
 
 
@@ -20,8 +20,13 @@ def cpu():
 
 
 @fixture
-def cpu_spec():
+def cpu_intel_spec():
     return {'name': 'Intel i7 9700K'}
+
+
+@fixture
+def cpu_amd_spec():
+    return {'name': 'AMD Ryzen 5 5900X'}
 
 
 def test_new_pc_has_no_components(pc):
@@ -30,21 +35,30 @@ def test_new_pc_has_no_components(pc):
 
 def test_add_component_when_component_not_there_then_it_is_added(pc, cpu):
     spec = {}
-    pc.add_component(name=cpu, spec=spec)
+    pc.add_component(category=cpu, spec=spec)
     assert pc.components == {cpu: spec}
 
 
-def test_add_component_when_component_is_there_then_it_is_not_replaced(pc, cpu, cpu_spec):
-    pc.add_component(name=cpu, spec=cpu_spec)
-    pc.add_component(name=cpu, spec={'name': 'AMD Ryzen 5 5900X'})
-    assert pc.components == {cpu: cpu_spec}
+def test_add_component_when_component_is_there_then_it_is_not_replaced(pc_with_cpu, cpu, cpu_intel_spec, cpu_amd_spec):
+    pc_with_cpu.add_component(category=cpu, spec=cpu_amd_spec)
+    assert pc_with_cpu.components == {cpu: cpu_intel_spec}
 
 
-def test_remove_component_when_component_not_there_then_nothing_is_removed(pc_with_cpu, cpu, cpu_spec):
-    pc_with_cpu.remove_component(name='ram')
-    assert pc_with_cpu.components == {cpu: cpu_spec}
+def test_remove_component_when_component_not_there_then_nothing_is_removed(pc_with_cpu, cpu, cpu_intel_spec):
+    pc_with_cpu.remove_component(category='ram')
+    assert pc_with_cpu.components == {cpu: cpu_intel_spec}
 
 
 def test_remove_component_when_component_is_there_then_it_is_removed(pc_with_cpu, cpu):
-    pc_with_cpu.remove_component(name=cpu)
+    pc_with_cpu.remove_component(category=cpu)
     assert pc_with_cpu.components == {}
+
+
+def test_swap_component_when_component_not_there_then_nothing_is_swapped(pc_with_cpu, cpu, cpu_intel_spec):
+    pc_with_cpu.swap_component(category='ram', spec={})
+    assert pc_with_cpu.components == {cpu: cpu_intel_spec}
+
+
+def test_swap_component_when_component_is_there_then_it_is_swapped(pc_with_cpu, cpu, cpu_amd_spec):
+    pc_with_cpu.swap_component(category=cpu, spec=cpu_amd_spec)
+    assert pc_with_cpu.components == {cpu: cpu_amd_spec}

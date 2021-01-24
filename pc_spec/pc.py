@@ -6,10 +6,19 @@ class PC:
     def components(self):
         return self.__components
 
-    def add_component(self, name, spec):
-        if not self.__components.get(name):
-            self.__components[name] = spec
+    def add_component(self, category, spec):
+        if not self.__component_exists(category):
+            self.__components[category] = spec
 
-    def remove_component(self, name):
-        if self.__components.get(name):
-            del self.__components[name]
+    def remove_component(self, category):
+        if self.__component_exists(category):
+            del self.__components[category]
+
+    def swap_component(self, category, spec):
+        if self.__component_exists(category):
+            self.__components[category] = spec
+
+    def __component_exists(self, category):
+        if self.__components.get(category):
+            return True
+        return False
