@@ -18,6 +18,10 @@ class PC:
         if self.__component_exists(category):
             self.__components[category] = spec
 
+    def update_component(self, category, param_name, param_value):
+        if self.__component_exists(category):
+            self.__components[category][param_name] = param_value
+
     def __component_exists(self, category):
         if self.__components.get(category):
             return True
