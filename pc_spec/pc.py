@@ -1,8 +1,20 @@
 class PC:
     """ Represents computer build. """
 
-    def __init__(self):
+    def __init__(self, name: str):
+        """
+        :param name: name of the PC, i.e. 'My gaming rig'
+        """
+        self.__name = name
         self.__components = {}
+
+    @property
+    def name(self) -> str:
+        """
+        Gets name of the PC.
+        :return: PC's name
+        """
+        return self.__name
 
     @property
     def components(self) -> dict:

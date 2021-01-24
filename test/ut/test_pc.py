@@ -4,8 +4,13 @@ from pc_spec.pc import PC
 
 
 @fixture
-def pc():
-    return PC()
+def pc(pc_name):
+    return PC(name=pc_name)
+
+
+@fixture
+def pc_name():
+    return 'my gaming pc'
 
 
 @fixture
@@ -54,6 +59,10 @@ def mobo():
 @fixture
 def ram():
     return 'ram'
+
+
+def test_new_pc_has_name(pc, pc_name):
+    assert pc.name == pc_name
 
 
 def test_new_pc_has_no_components(pc):

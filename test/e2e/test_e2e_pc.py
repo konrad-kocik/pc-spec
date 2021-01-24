@@ -2,7 +2,8 @@ from pc_spec.pc import PC
 
 
 def test_components_management():
-    pc = PC()
+    pc = PC(name='gaming rig')
+    assert pc.name == 'gaming rig'
 
     pc.add_component(category='mobo')
     assert pc.components == {'mobo': {}}
