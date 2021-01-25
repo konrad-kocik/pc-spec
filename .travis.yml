@@ -1,25 +1,20 @@
 language: python
+os: linux
+dist: xenial
+install: pip install -r requirements/test.txt
+script: tox
 
-matrix:
+jobs:
   include:
     - python: 3.8
-      env: TOXENV=tests-py37
+      env: TOXENV=tests-py38
       dist: xenial
-      sudo: true
     - python: 3.8
-      env: TOXENV=mutations-py37
+      env: TOXENV=mutations-py38
       dist: xenial
-      sudo: true
     - python: 3.8
-      env: TOXENV=style-py37
+      env: TOXENV=style-py38
       dist: xenial
-      sudo: true
     - python: 3.8
-      env: TOXENV=docs-py37
+      env: TOXENV=docs-py38
       dist: xenial
-      sudo: true
-
-install:
-  - pip install -r requirements/test.txt
-script:
-  - tox
