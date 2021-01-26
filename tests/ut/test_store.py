@@ -34,16 +34,14 @@ def test_new_store_has_no_pcs(store):
 
 def test_add_pc_when_pc_with_same_name_not_there_then_pc_is_added(store, pc):
     store.add_pc(pc=pc)
-    assert len(store.pcs) == 1
-    assert pc in store.pcs
+    assert store.pcs == [pc]
 
 
 def test_add_pc_when_pc_with_same_name_is_there_then_nothing_is_added(store_with_pc, pc):
     new_pc = Mock()
     new_pc.name = pc.name
     store_with_pc.add_pc(pc=new_pc)
-    assert len(store_with_pc.pcs) == 1
-    assert new_pc not in store_with_pc.pcs
+    assert store_with_pc.pcs == [pc]
 
 
 def test_get_pc_when_pc_with_same_name_not_there_then_nothing_is_returned(store, not_existing_pc_name):
@@ -56,11 +54,9 @@ def test_get_pc_when_pc_with_same_name_is_there_then_it_is_returned(store_with_p
 
 def test_remove_pc_when_pc_with_same_name_not_there_then_nothing_is_removed(store_with_pc, pc, not_existing_pc_name):
     store_with_pc.remove_pc(name=not_existing_pc_name)
-    assert len(store_with_pc.pcs) == 1
-    assert pc in store_with_pc.pcs
+    assert store_with_pc.pcs == [pc]
 
 
 def test_remove_pc_when_pc_with_same_name_is_there_then_it_is_removed(store_with_pc, pc):
     store_with_pc.remove_pc(name=pc.name)
-    assert len(store_with_pc.pcs) == 0
-    assert pc not in store_with_pc.pcs
+    assert store_with_pc.pcs == []
