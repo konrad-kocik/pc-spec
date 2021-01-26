@@ -21,7 +21,7 @@ class Store:
         If PC with same name already exists then nothing will change.
         :param pc: PC to be added
         """
-        if pc.name not in [pc.name for pc in self.__pcs]:
+        if not self.__search_pc(pc.name):
             self.__pcs.append(pc)
 
     def get_pc(self, name: str) -> PC:
@@ -31,9 +31,7 @@ class Store:
         :param name: name of PC to be searched
         :return: PC with given name, None if not found
         """
-        for pc in self.__pcs:
-            if pc.name == name:
-                return pc
+        return self.__search_pc(name)
 
     def remove_pc(self, name: str):
         """
@@ -41,7 +39,10 @@ class Store:
         If PC with given name doesn't exist then nothing will change.
         :param name: name of PC to be removed
         """
+        if pc := self.__search_pc(name):
+            self.__pcs.remove(pc)
+
+    def __search_pc(self, name):
         for pc in self.__pcs:
             if pc.name == name:
-                self.__pcs.remove(pc)
-                return
+                return pc
