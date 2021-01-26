@@ -75,7 +75,7 @@ def test_add_component_when_component_not_there_then_it_is_added(pc, cpu):
     assert pc.components == {cpu: spec}
 
 
-def test_add_component_when_component_is_there_then_it_is_not_replaced(pc_with_cpu, cpu, cpu_intel_spec, cpu_amd_spec):
+def test_add_component_when_component_is_there_then_nothing_is_added(pc_with_cpu, cpu, cpu_intel_spec, cpu_amd_spec):
     pc_with_cpu.add_component(category=cpu, spec=cpu_amd_spec)
     assert pc_with_cpu.components == {cpu: cpu_intel_spec}
 
