@@ -1,9 +1,20 @@
 from pc_spec.pc import PC
+from pc_spec.store import Store
 
 
-def test_components_management():
-    pc = PC(name='gaming rig')
-    assert pc.name == 'gaming rig'
+def test_pcs_management_in_store():
+    store = Store()
+    assert store.pcs == []
+
+    new_pc = PC(name='gaming rig')
+    assert new_pc.name == 'gaming rig'
+    assert new_pc.components == {}
+
+    store.add_pc(pc=new_pc)
+    assert store.pcs == [new_pc]
+
+    pc = store.get_pc('gaming rig')
+    assert pc == new_pc
 
     pc.add_component(category='mobo')
     assert pc.components == {'mobo': {}}
@@ -68,5 +79,25 @@ def test_components_management():
                              'gpu': {}}
 
     pc.remove_component(category='gpu')
+    assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
+                             'cpu': {'name': 'AMD Ryzen 5 5900X'}}
+
+    store.add_pc(PC(name='gaming rig'))
+    assert store.pcs == [pc]
+
+    new_pc = PC(name='workstation')
+    store.add_pc(pc=new_pc)
+    assert store.pcs == [pc, new_pc]
+
+    not_existing_pc = store.get_pc(name='xbox')
+    assert not_existing_pc is None
+
+    store.remove_pc(name='xbox')
+    assert store.pcs == [pc, new_pc]
+
+    store.remove_pc(name='workstation')
+    assert store.pcs == [pc]
+
+    pc = store.get_pc(name='gaming rig')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'}}
