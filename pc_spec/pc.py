@@ -1,3 +1,6 @@
+from typing import Dict, Optional, NoReturn
+
+
 class PC:
     """ Represents computer build. """
 
@@ -5,8 +8,8 @@ class PC:
         """
         :param name: name of the PC, i.e. 'My gaming rig'
         """
-        self.__name = name
-        self.__components = {}
+        self.__name: str = name
+        self.__components: Dict[str, Dict[str, str]] = {}
 
     @property
     def name(self) -> str:
@@ -17,14 +20,14 @@ class PC:
         return self.__name
 
     @property
-    def components(self) -> dict:
+    def components(self) -> Dict[str, Dict[str, str]]:
         """
         Gets component parts of the PC.
         :return: PC's components
         """
         return self.__components
 
-    def add_component(self, category: str, spec: dict = None):
+    def add_component(self, category: str, spec: Optional[Dict[str, str]] = None) -> NoReturn:
         """
         Adds new component to the PC.
         If component with given category already exists then nothing will change.
@@ -35,7 +38,7 @@ class PC:
         if not self.__component_exists(category):
             self.__components[category] = spec if spec else {}
 
-    def remove_component(self, category: str):
+    def remove_component(self, category: str) -> NoReturn:
         """
         Removes component from the PC.
         If component with given category doesn't exist then nothing will change.
@@ -44,7 +47,7 @@ class PC:
         if self.__component_exists(category):
             del self.__components[category]
 
-    def swap_component(self, category: str, spec: dict = None):
+    def swap_component(self, category: str, spec: Optional[Dict[str, str]] = None) -> NoReturn:
         """
         Replaces specification of component from given category with new one.
         If component with given category doesn't exist then nothing will change.
@@ -55,7 +58,7 @@ class PC:
         if self.__component_exists(category):
             self.__components[category] = spec if spec else {}
 
-    def update_component(self, category: str, param_name: str, param_value: str):
+    def update_component(self, category: str, param_name: str, param_value: str) -> NoReturn:
         """
         Updates specification of component from given category.
         If component with given category doesn't exist then nothing will change.

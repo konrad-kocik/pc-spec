@@ -1,21 +1,23 @@
+from typing import List, NoReturn, Optional
+
 from pc_spec.pc import PC
 
 
 class Store:
-    """ Represents collection of computer builds. """
+    """ Represents collection of PCs. """
 
     def __init__(self):
-        self.__pcs = []
+        self.__pcs: List[PC] = []
 
     @property
-    def pcs(self) -> list:
+    def pcs(self) -> List[PC]:
         """
         Gets all PCs from the store.
         :return: store's PCs
         """
         return self.__pcs
 
-    def add_pc(self, pc: PC):
+    def add_pc(self, pc: PC) -> NoReturn:
         """
         Adds new PC to the store.
         If PC with same name already exists then nothing will change.
@@ -24,7 +26,7 @@ class Store:
         if not self.__search_pc(pc.name):
             self.__pcs.append(pc)
 
-    def get_pc(self, name: str) -> PC:
+    def get_pc(self, name: str) -> Optional[PC]:
         """
         Gets PC from the store.
         If PC with given name doesn't exist then nothing is returned.
@@ -33,7 +35,7 @@ class Store:
         """
         return self.__search_pc(name)
 
-    def remove_pc(self, name: str):
+    def remove_pc(self, name: str) -> NoReturn:
         """
         Removes PC from the store.
         If PC with given name doesn't exist then nothing will change.
@@ -42,7 +44,7 @@ class Store:
         if pc := self.__search_pc(name):
             self.__pcs.remove(pc)
 
-    def __search_pc(self, name):
+    def __search_pc(self, name: str) -> Optional[PC]:
         for pc in self.__pcs:
             if pc.name == name:
                 return pc
