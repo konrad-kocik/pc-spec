@@ -15,3 +15,6 @@ jobs:
     - python: 3.8
       env: TOXENV=style-py38
       dist: xenial
+    - python: 3.8
+      env: TOXENV=types-py38
+      dist: xenial

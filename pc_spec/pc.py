@@ -1,4 +1,4 @@
-from typing import Dict, Optional, NoReturn
+from typing import Dict, Optional
 
 
 class PC:
@@ -27,7 +27,7 @@ class PC:
         """
         return self.__components
 
-    def add_component(self, category: str, spec: Optional[Dict[str, str]] = None) -> NoReturn:
+    def add_component(self, category: str, spec: Optional[Dict[str, str]] = None):
         """
         Adds new component to the PC.
         If component with given category already exists then nothing will change.
@@ -38,7 +38,7 @@ class PC:
         if not self.__component_exists(category):
             self.__components[category] = spec if spec else {}
 
-    def remove_component(self, category: str) -> NoReturn:
+    def remove_component(self, category: str):
         """
         Removes component from the PC.
         If component with given category doesn't exist then nothing will change.
@@ -47,7 +47,7 @@ class PC:
         if self.__component_exists(category):
             del self.__components[category]
 
-    def swap_component(self, category: str, spec: Optional[Dict[str, str]] = None) -> NoReturn:
+    def swap_component(self, category: str, spec: Optional[Dict[str, str]] = None):
         """
         Replaces specification of component from given category with new one.
         If component with given category doesn't exist then nothing will change.
@@ -58,7 +58,7 @@ class PC:
         if self.__component_exists(category):
             self.__components[category] = spec if spec else {}
 
-    def update_component(self, category: str, param_name: str, param_value: str) -> NoReturn:
+    def update_component(self, category: str, param_name: str, param_value: str):
         """
         Updates specification of component from given category.
         If component with given category doesn't exist then nothing will change.
