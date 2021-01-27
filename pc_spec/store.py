@@ -1,4 +1,4 @@
-from typing import List, NoReturn, Optional
+from typing import List, Optional
 
 from pc_spec.pc import PC
 
@@ -17,7 +17,7 @@ class Store:
         """
         return self.__pcs
 
-    def add_pc(self, pc: PC) -> NoReturn:
+    def add_pc(self, pc: PC):
         """
         Adds new PC to the store.
         If PC with same name already exists then nothing will change.
@@ -35,7 +35,7 @@ class Store:
         """
         return self.__search_pc(name)
 
-    def remove_pc(self, name: str) -> NoReturn:
+    def remove_pc(self, name: str):
         """
         Removes PC from the store.
         If PC with given name doesn't exist then nothing will change.
@@ -48,3 +48,4 @@ class Store:
         for pc in self.__pcs:
             if pc.name == name:
                 return pc
+        return None
