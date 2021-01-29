@@ -65,8 +65,14 @@ def test_new_pc_has_name(pc, pc_name):
     assert pc.name == pc_name
 
 
-def test_new_pc_has_no_components(pc):
+def test_new_default_pc_has_no_components(pc):
     assert pc.components == {}
+
+
+def test_new_custom_pc_has_components(pc_name, cpu, cpu_intel_spec):
+    components = {cpu: cpu_intel_spec}
+    pc = PC(name=pc_name, components=components)
+    assert pc.components == components
 
 
 def test_add_component_when_component_not_there_then_it_is_added(pc, cpu):
