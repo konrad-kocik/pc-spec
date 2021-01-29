@@ -28,8 +28,14 @@ def not_existing_pc_name():
     return 'not existing pc'
 
 
-def test_new_store_has_no_pcs(store):
+def test_new_default_store_has_no_pcs(store):
     assert store.pcs == []
+
+
+def test_new_custom_store_has_pcs(pc):
+    pcs = [pc]
+    store = Store(pcs=pcs)
+    assert store.pcs == pcs
 
 
 def test_add_pc_when_pc_with_same_name_not_there_then_pc_is_added(store, pc):

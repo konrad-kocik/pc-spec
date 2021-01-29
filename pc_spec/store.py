@@ -6,8 +6,11 @@ from pc_spec.pc import PC
 class Store:
     """ Represents collection of PCs. """
 
-    def __init__(self):
-        self.__pcs: List[PC] = []
+    def __init__(self, pcs: Optional[List[PC]] = None):
+        """
+        :param pcs: collection of PCs which will be stored
+        """
+        self.__pcs: List[PC] = pcs if pcs else []
 
     @property
     def pcs(self) -> List[PC]:
