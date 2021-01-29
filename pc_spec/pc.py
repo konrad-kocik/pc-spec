@@ -7,6 +7,7 @@ class PC:
     def __init__(self, name: str, components: Optional[Dict[str, Dict[str, str]]] = None):
         """
         :param name: name of the PC, i.e. 'My gaming rig'
+        :param components: component parts of the PC
         """
         self.__name: str = name
         self.__components: Dict[str, Dict[str, str]] = components if components else {}
