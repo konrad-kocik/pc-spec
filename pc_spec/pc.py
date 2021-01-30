@@ -1,16 +1,19 @@
 from typing import Dict, Optional
 
+Spec = Dict[str, str]  # pragma: no mutate
+Components = Dict[str, Spec]  # pragma: no mutate
+
 
 class PC:
     """ Represents computer build. """
 
-    def __init__(self, name: str, components: Optional[Dict[str, Dict[str, str]]] = None):
+    def __init__(self, name: str, components: Optional[Components] = None):
         """
         :param name: name of the PC, i.e. 'My gaming rig'
         :param components: component parts of the PC
         """
         self.__name: str = name
-        self.__components: Dict[str, Dict[str, str]] = components if components else {}
+        self.__components: Components = components if components else {}
 
     @property
     def name(self) -> str:
@@ -21,14 +24,14 @@ class PC:
         return self.__name
 
     @property
-    def components(self) -> Dict[str, Dict[str, str]]:
+    def components(self) -> Components:
         """
         Gets component parts of the PC.
         :return: PC's components
         """
         return self.__components
 
-    def add_component(self, category: str, spec: Optional[Dict[str, str]] = None):
+    def add_component(self, category: str, spec: Optional[Spec] = None):
         """
         Adds new component to the PC.
         If component with given category already exists then nothing will change.
@@ -48,7 +51,7 @@ class PC:
         if self.__component_exists(category):
             del self.__components[category]
 
-    def swap_component(self, category: str, spec: Optional[Dict[str, str]] = None):
+    def swap_component(self, category: str, spec: Optional[Spec] = None):
         """
         Replaces specification of component from given category with new one.
         If component with given category doesn't exist then nothing will change.
