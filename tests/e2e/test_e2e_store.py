@@ -1,5 +1,24 @@
+from pathlib import Path
+from shutil import rmtree
+
+from pytest import fixture
+
+from pc_spec.data import save_store, load_store
 from pc_spec.pc import PC
 from pc_spec.store import Store
+
+
+@fixture
+def test_dir_path():
+    return Path('test_data', 'test_files')
+
+
+@fixture
+def remove_test_dir(test_dir_path, request):
+    def teardown():
+        if test_dir_path.is_dir():
+            rmtree(test_dir_path.parent)
+    request.addfinalizer(teardown)
 
 
 def test_pcs_management_in_store():
@@ -101,3 +120,21 @@ def test_pcs_management_in_store():
     pc = store.get_pc(name='gaming rig')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'}}
+
+
+def test_saving_and_loading_store(test_dir_path, remove_test_dir):
+    store = Store(pcs=[PC(name='gaming rig',
+                          components={'cpu': {'name': 'i7-9700K'},
+                                      'gpu': {'name': 'RTX 3070'}}),
+                       PC(name='workstation',
+                          components={'mobo': {'name': 'ASRock Z390 EXTREME4',
+                                               'format': 'ATX'}})])
+
+    save_store(store=store, target_dir=test_dir_path)
+    loaded_store = load_store(source_dir=test_dir_path)
+
+    assert len(loaded_store.pcs) == len(store.pcs)
+
+    for pc_id, loaded_pc in enumerate(loaded_store.pcs):
+        assert loaded_pc.name == store.pcs[pc_id].name
+        assert loaded_pc.components == store.pcs[pc_id].components

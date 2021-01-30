@@ -57,17 +57,17 @@ def test_dir_path():
 
 
 @fixture
+def create_test_dir(test_dir_path):
+    if not test_dir_path.is_dir():
+        test_dir_path.mkdir(parents=True)
+
+
+@fixture
 def remove_test_dir(test_dir_path, request):
     def teardown():
         if test_dir_path.is_dir():
             rmtree(test_dir_path.parent)
     request.addfinalizer(teardown)
-
-
-@fixture
-def create_test_dir(test_dir_path):
-    if not test_dir_path.is_dir():
-        test_dir_path.mkdir(parents=True)
 
 
 @fixture
