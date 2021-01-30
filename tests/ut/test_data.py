@@ -16,7 +16,7 @@ def empty_store():
 
 
 @fixture
-def store(empty_store, pc_1_name, pc_1_components, pc_2_name, pc_2_components):
+def store(pc_1_name, pc_1_components, pc_2_name, pc_2_components):
     pc_1 = Mock()
     pc_1.name = pc_1_name
     pc_1.components = pc_1_components
@@ -25,8 +25,9 @@ def store(empty_store, pc_1_name, pc_1_components, pc_2_name, pc_2_components):
     pc_2.name = pc_2_name
     pc_2.components = pc_2_components
 
-    empty_store.pcs = [pc_1, pc_2]
-    return empty_store
+    store = Mock()
+    store.pcs = [pc_1, pc_2]
+    return store
 
 
 @fixture
@@ -108,6 +109,13 @@ def test_save_store_when_store_not_empty_then_it_is_saved(
                {store.pcs[1].name: store.pcs[1].components}]
     save_store(store=store, target_dir=test_dir_path)
     __assert_json_file_contains(content=content, file_path=test_file_path)
+
+
+def test_save_store_when_saving_to_same_file_then_file_is_overridden(
+        empty_store, store, test_dir_path, test_file_path, create_test_dir, remove_test_dir):
+    save_store(store=store, target_dir=test_dir_path)
+    save_store(store=empty_store, target_dir=test_dir_path)
+    __assert_json_file_contains(content=empty_store.pcs, file_path=test_file_path)
 
 
 def test_load_store_when_file_is_not_there_then_empty_store_is_loaded(test_dir_path):
