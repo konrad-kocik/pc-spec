@@ -2,7 +2,7 @@ from json import dump, load, JSONDecodeError
 from pathlib import Path
 from typing import List, Dict, Tuple
 
-from pc_spec.pc import PC
+from pc_spec.pc import PC, Components
 from pc_spec.store import Store
 
 
@@ -31,7 +31,7 @@ def load_store(source_dir: Path) -> Store:
     return Store(__get_pcs_from_json_file(file_path)) if file_path.is_file() else Store()
 
 
-def __get_store_file_name():
+def __get_store_file_name() -> str:
     return 'store.json'
 
 
@@ -40,7 +40,7 @@ def __create_dir_if_necessary(dir_path: Path):
         dir_path.mkdir(parents=True)
 
 
-def __to_serializable_pcs(pcs: List[PC]) -> List[Dict[str, Dict[str, Dict[str, str]]]]:
+def __to_serializable_pcs(pcs: List[PC]) -> List[Dict[str, Components]]:
     return [{pc.name: pc.components} for pc in pcs]
 
 
@@ -57,8 +57,7 @@ def __get_pcs_from_json_file(file_path: Path) -> List[PC]:
             return []
 
 
-def __unpack_serialized_pc(serialized_pc: Dict[str, Dict[str, Dict[str, str]]]) -> \
-        Tuple[str, Dict[str, Dict[str, str]]]:
+def __unpack_serialized_pc(serialized_pc: Dict[str, Components]) -> Tuple[str, Components]:
     name = list(serialized_pc.keys())[0]
     components = list(serialized_pc.values())[0]
     return name, components
