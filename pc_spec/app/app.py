@@ -143,7 +143,3 @@ def main():
     Config.write()
     pc_spec_app = PCSpecApp()
     pc_spec_app.run()
-
-
-if __name__ == '__main__':
-    main()
