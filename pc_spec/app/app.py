@@ -4,6 +4,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.image import Image
+from kivy.config import Config
 
 from pc_spec.data import load_store
 
@@ -13,8 +14,8 @@ class PCSpecApp(App):
         super(PCSpecApp, self).__init__()
         self.title = 'PC Spec'
         self._colors = {'pink': [120, 0, 255, 0.7],
-                        'mint': [0, 255, 10, 0.7],
-                        'black': [80, 80, 80, 0.7]}
+                        'mint': [0, 255, 3, 0.7],
+                        'black': [255, 255, 255, 1]}
 
         self._main_layout = None
         self._buttons_layout = None
@@ -33,38 +34,54 @@ class PCSpecApp(App):
         self._spec_value = None
 
     def build(self):
-        self._create_main_layout()
+        self._create_layouts()
+        self._create_menu()
         self._create_pcs_buttons()
         return self._main_layout
 
-    def _create_main_layout(self):
-        self._main_layout = BoxLayout(padding=10,
+    def _create_layouts(self):
+        border_size = 3
+
+        self._main_layout = BoxLayout(padding=0,
                                       orientation='vertical')
 
-        image = Image(source='/home/bajit/repos/pc-spec/pc_spec/app/logo.jpeg',
-                      size_hint=(0.2, 0.2))
-        self._main_layout.add_widget(image)
+        self._menu_layout = BoxLayout(padding=border_size,
+                                      orientation='horizontal',
+                                      size_hint=(0.15, 0.15))
+        self._main_layout.add_widget(self._menu_layout)
 
-        self._buttons_layout = BoxLayout(padding=10,
+        self._buttons_layout = BoxLayout(padding=0,
+                                         spacing=border_size,
                                          orientation='horizontal')
         self._main_layout.add_widget(self._buttons_layout)
 
-        self._pcs_layout = BoxLayout(padding=10,
-                                     orientation='vertical')
+        self._pcs_layout = BoxLayout(padding=0,
+                                     spacing=border_size,
+                                     orientation='vertical',
+                                     size_hint=(0.5, 1))
         self._buttons_layout.add_widget(self._pcs_layout)
 
-        self._components_layout = BoxLayout(padding=10,
-                                            orientation='vertical')
+        self._components_layout = BoxLayout(padding=0,
+                                            spacing=border_size,
+                                            orientation='vertical',
+                                            size_hint=(0.5, 1))
         self._buttons_layout.add_widget(self._components_layout)
 
-        self._specs_layout = BoxLayout(padding=10,
+        self._specs_layout = BoxLayout(padding=0,
+                                       spacing=border_size,
                                        orientation='vertical')
         self._buttons_layout.add_widget(self._specs_layout)
+
+    def _create_menu(self):
+        image = Image(source='/home/bajit/repos/pc-spec/pc_spec/app/logo.png',
+                      size_hint=(1, 1))
+        self._menu_layout.add_widget(image)
 
     def _create_pcs_buttons(self):
         for pc in self._store.pcs:
             pc_button = Button(text=pc.name.upper(),
-                               background_color=self._colors['mint'])
+                               background_color=self._colors['mint'],
+                               color=self._colors['black'])
             pc_button.bind(on_press=self._on_press_pc_button)
             pc_button.pc_name = pc.name
             self._pcs_buttons.append(pc_button)
@@ -84,7 +101,8 @@ class PCSpecApp(App):
 
         for component_name in self._pc.components:
             component_button = Button(text=component_name.upper(),
-                                      background_color=self._colors['mint'])
+                                      background_color=self._colors['mint'],
+                                      color=self._colors['black'])
             component_button.bind(on_press=self._on_press_component_button)
             component_button.component_name = component_name
             self._components_buttons.append(component_button)
@@ -102,7 +120,8 @@ class PCSpecApp(App):
         for spec_name, spec_value in self._component.items():
             button_text = spec_value if spec_name.lower() == 'name' else f'{spec_name.upper()}: {spec_value}'
             spec_button = Button(text=button_text,
-                                 background_color=self._colors['mint'])
+                                 background_color=self._colors['mint'],
+                                 color=self._colors['black'])
             spec_button.bind(on_press=self._on_press_spec_button)
             spec_button.spec_name = spec_name
             spec_button.spec_value = spec_value
@@ -119,6 +138,12 @@ class PCSpecApp(App):
             button.background_color = self._colors['pink'] if button is pressed_button else self._colors['mint']
 
 
-if __name__ == '__main__':
+def main():
+    Config.set('graphics', 'fullscreen', '0')
+    Config.write()
     pc_spec_app = PCSpecApp()
     pc_spec_app.run()
+
+
+if __name__ == '__main__':
+    main()
