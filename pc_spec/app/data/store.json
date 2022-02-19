@@ -1,0 +1,5 @@
+[{"gaming rig": {"cpu": {"name":  "i7-9700K", "socket":  "FCLGA 1151"},
+                 "gpu":  {"name":  "RTX 3070"},
+                 "ram":  {"name":  "HyperX Predator"}}},
+ {"workstation": {"cpu":  {"name":  "Ryzen 5 5900X"},
+                  "gpu":  {"name":  "RX 6500"}}}]
