@@ -47,7 +47,7 @@ class PCSpecApp(App):
 
         self._menu_layout = BoxLayout(padding=border_size,
                                       orientation='horizontal',
-                                      size_hint=(0.15, 0.15))
+                                      size_hint=(0.04, 0.15))
         self._main_layout.add_widget(self._menu_layout)
 
         self._buttons_layout = BoxLayout(padding=0,
