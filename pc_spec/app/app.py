@@ -12,6 +12,10 @@ from pc_spec.data import load_store
 class PCSpecApp(App):
     def __init__(self):
         super(PCSpecApp, self).__init__()
+
+        Config.set('graphics', 'fullscreen', '0')
+        Config.write()
+
         self.title = 'PC Spec'
         self._colors = {'pink': [120, 0, 255, 0.7],
                         'mint': [0, 255, 3, 0.7],
@@ -136,10 +140,3 @@ class PCSpecApp(App):
     def _color_buttons(self, buttons, pressed_button):
         for button in buttons:
             button.background_color = self._colors['pink'] if button is pressed_button else self._colors['mint']
-
-
-def main():
-    Config.set('graphics', 'fullscreen', '0')
-    Config.write()
-    pc_spec_app = PCSpecApp()
-    pc_spec_app.run()
