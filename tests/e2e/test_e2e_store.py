@@ -25,21 +25,40 @@ def test_pcs_management_in_store():
     store = Store()
     assert store.pcs == []
 
+    assert not store.has_pc(name='gaming rig')
+    assert not store.has_pc(name='Gaming Rig')
+
     store.add_pc(name='gaming rig', components={})
     assert len(store.pcs) == 1
     assert store.pcs[0].name == 'gaming rig'
     assert store.pcs[0].components == {}
 
+    assert store.has_pc(name='gaming rig')
+    assert store.has_pc(name='Gaming Rig')
+
     pc = store.get_pc('gaming rig')
     assert pc.name == 'gaming rig'
     assert pc.components == {}
 
+    assert not pc.has_component(category='mobo')
+    assert not pc.has_component(category='MOBO')
+
     pc.add_component(category='mobo')
     assert pc.components == {'mobo': {}}
+
+    assert pc.has_component(category='mobo')
+    assert pc.has_component(category='MOBO')
+
+    assert not pc.has_spec_param(category='cpu', param_name='name')
 
     pc.add_component(category='cpu', spec={'name': 'Intel i7 9700K'})
     assert pc.components == {'mobo': {},
                              'cpu': {'name': 'Intel i7 9700K'}}
+
+    assert pc.has_spec_param(category='cpu', param_name='name')
+    assert pc.has_spec_param(category='cpu', param_name='NAME')
+    assert not pc.has_spec_param(category='cpu', param_name='frequency')
+    assert not pc.has_spec_param(category='cpu', param_name='FREQUENCY')
 
     pc.add_component(category='cpu', spec={'name': 'AMD Ryzen 5 5900X'})
     assert pc.components == {'mobo': {},
@@ -100,6 +119,8 @@ def test_pcs_management_in_store():
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'}}
 
+    assert not pc.has_component(category='gpu')
+
     store.add_pc(name='gaming rig')
     assert len(store.pcs) == 1
     assert store.pcs[0].name == pc.name
@@ -111,6 +132,8 @@ def test_pcs_management_in_store():
     assert store.pcs[0].components == pc.components
     assert store.pcs[1].name == 'workstation'
     assert store.pcs[1].components == {}
+
+    assert store.has_pc(name='workstation')
 
     not_existing_pc = store.get_pc(name='xbox')
     assert not_existing_pc is None
