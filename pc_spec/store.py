@@ -51,8 +51,17 @@ class Store:
         if pc := self.__search_pc(name):
             self.__pcs.remove(pc)
 
+    def has_pc(self, name: str) -> bool:
+        """
+        Checks whether PC with given name exists.
+        Is case-insensitive (i.e. 'my pc' == 'My PC').
+        :param name: name of PC to be searched
+        :return: True if PC with given name exists, False otherwise
+        """
+        return bool(self.__search_pc(name))
+
     def __search_pc(self, name: str) -> Optional[PC]:
         for pc in self.__pcs:
-            if pc.name == name:
+            if pc.name.lower() == name.lower():
                 return pc
         return None

@@ -88,3 +88,13 @@ def test_remove_pc_when_pc_with_same_name_is_there_then_it_is_removed(store_with
     assert len(store_with_pc.pcs) == 1
     store_with_pc.remove_pc(name=pc_name)
     assert store_with_pc.pcs == []
+
+
+def test_has_pc_when_pc_with_given_name_is_there_then_true_is_returned(store_with_pc, pc_name):
+    assert store_with_pc.has_pc(name=pc_name) is True
+    assert store_with_pc.has_pc(name=pc_name.upper()) is True
+
+
+def test_has_pc_when_pc_with_given_name_is_not_there_then_false_is_returned(store_with_pc, not_existing_pc_name):
+    assert store_with_pc.has_pc(name=not_existing_pc_name) is False
+    assert store_with_pc.has_pc(name=not_existing_pc_name.upper()) is False
