@@ -134,3 +134,28 @@ def test_update_component_when_param_is_there_then_it_is_updated(pc_with_cpu, cp
     freq_value = '5.0 GHz'
     pc_with_cpu.update_component(category=cpu, param_name=freq_name, param_value=freq_value)
     assert pc_with_cpu.components == {cpu: {'name': 'Intel i7 9700K', freq_name: freq_value}}
+
+
+def test_has_component_when_component_is_there_then_true_is_returned(pc_with_cpu, cpu):
+    assert pc_with_cpu.has_component(category=cpu) is True
+    assert pc_with_cpu.has_component(category=cpu.upper()) is True
+
+
+def test_has_component_when_component_is_not_there_then_false_is_returned(pc, cpu):
+    assert pc.has_component(category=cpu) is False
+    assert pc.has_component(category=cpu.upper()) is False
+
+
+def test_has_spec_param_when_spec_param_is_there_then_true_is_returned(pc_with_cpu, cpu):
+    assert pc_with_cpu.has_spec_param(category=cpu, param_name='name') is True
+    assert pc_with_cpu.has_spec_param(category=cpu, param_name='NAME') is True
+
+
+def test_has_spec_param_when_spec_param_is_not_there_then_false_is_returned(pc_with_cpu, cpu):
+    assert pc_with_cpu.has_spec_param(category=cpu, param_name='frequency') is False
+    assert pc_with_cpu.has_spec_param(category=cpu, param_name='FREQUENCY') is False
+
+
+def test_has_spec_param_when_category_is_not_there_then_false_is_returned(pc, cpu):
+    assert pc.has_spec_param(category=cpu, param_name='frequency') is False
+    assert pc.has_spec_param(category=cpu.upper(), param_name='frequency') is False

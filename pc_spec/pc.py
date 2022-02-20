@@ -75,5 +75,30 @@ class PC:
         if self.__component_exists(category):
             self.__components[category][param_name] = param_value
 
+    def has_component(self, category: str) -> bool:
+        """
+        Checks whether component from given category exists.
+        Is case-insensitive (i.e. 'cpu' == 'CPU').
+        :param category: type of component to be checked, i.e. 'cpu'
+        :return: True if component from given category exists, False otherwise
+        """
+        return self.__component_exists(category)
+
+    def has_spec_param(self, category: str, param_name: str) -> bool:
+        """
+        Checks whether specification of component from given category has parameter with given name.
+        Is case-sensitive for category (i.e. 'cpu' != 'CPU').
+        Is case-insensitive for param name (i.e. 'frequency' == 'Frequency').
+        :param category: type of component to be checked, i.e. 'cpu'
+        :param param_name: name of specification's parameter to be checked, i.e. 'frequency'
+        :return: True if parameter exists, False otherwise
+        """
+        if category not in self.__components:
+            return False
+
+        param_names = [param_name.lower() for param_name in self.__components[category]]
+        return param_name.lower() in param_names
+
     def __component_exists(self, category: str) -> bool:
-        return category in self.__components.keys()
+        categories = [category.lower() for category in self.__components.keys()]
+        return category.lower() in categories
