@@ -1,6 +1,9 @@
-from typing import List, Optional
+from typing import List, Dict, Optional
 
 from pc_spec.pc import PC
+
+Spec = Dict[str, str]  # pragma: no mutate
+Components = Dict[str, Spec]  # pragma: no mutate
 
 
 class Store:
@@ -20,14 +23,15 @@ class Store:
         """
         return self.__pcs
 
-    def add_pc(self, pc: PC):
+    def add_pc(self, name: str, components: Optional[Components] = None):
         """
         Adds new PC to the store.
         If PC with same name already exists then nothing will change.
-        :param pc: PC to be added
+        :param name: name of PC to be added
+        :param components: component parts of PC to be added
         """
-        if not self.__search_pc(pc.name):
-            self.__pcs.append(pc)
+        if not self.__search_pc(name):
+            self.__pcs.append(PC(name=name, components=components))
 
     def get_pc(self, name: str) -> Optional[PC]:
         """

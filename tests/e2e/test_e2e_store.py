@@ -25,15 +25,14 @@ def test_pcs_management_in_store():
     store = Store()
     assert store.pcs == []
 
-    new_pc = PC(name='gaming rig')
-    assert new_pc.name == 'gaming rig'
-    assert new_pc.components == {}
-
-    store.add_pc(pc=new_pc)
-    assert store.pcs == [new_pc]
+    store.add_pc(name='gaming rig', components={})
+    assert len(store.pcs) == 1
+    assert store.pcs[0].name == 'gaming rig'
+    assert store.pcs[0].components == {}
 
     pc = store.get_pc('gaming rig')
-    assert pc == new_pc
+    assert pc.name == 'gaming rig'
+    assert pc.components == {}
 
     pc.add_component(category='mobo')
     assert pc.components == {'mobo': {}}
@@ -101,21 +100,32 @@ def test_pcs_management_in_store():
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'}}
 
-    store.add_pc(PC(name='gaming rig'))
-    assert store.pcs == [pc]
+    store.add_pc(name='gaming rig')
+    assert len(store.pcs) == 1
+    assert store.pcs[0].name == pc.name
+    assert store.pcs[0].components == pc.components
 
-    new_pc = PC(name='workstation')
-    store.add_pc(pc=new_pc)
-    assert store.pcs == [pc, new_pc]
+    store.add_pc(name='workstation')
+    assert len(store.pcs) == 2
+    assert store.pcs[0].name == pc.name
+    assert store.pcs[0].components == pc.components
+    assert store.pcs[1].name == 'workstation'
+    assert store.pcs[1].components == {}
 
     not_existing_pc = store.get_pc(name='xbox')
     assert not_existing_pc is None
 
     store.remove_pc(name='xbox')
-    assert store.pcs == [pc, new_pc]
+    assert len(store.pcs) == 2
+    assert store.pcs[0].name == pc.name
+    assert store.pcs[0].components == pc.components
+    assert store.pcs[1].name == 'workstation'
+    assert store.pcs[1].components == {}
 
     store.remove_pc(name='workstation')
-    assert store.pcs == [pc]
+    assert len(store.pcs) == 1
+    assert store.pcs[0].name == pc.name
+    assert store.pcs[0].components == pc.components
 
     pc = store.get_pc(name='gaming rig')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
