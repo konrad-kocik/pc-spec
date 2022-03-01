@@ -36,7 +36,7 @@ class PCSpecApp(App):
         self._specs_buttons = []
         self._add_spec_button = None
 
-        self._store = load_store(source_dir=Path('/home/bajit/repos/pc-spec/pc_spec/app/data'))
+        self._store = load_store(source_dir=Path(Path.home(), 'AppData', 'Local', 'PCSpec'))
         self._pc = None
         self._component_category = None
         self._component = None
@@ -83,7 +83,7 @@ class PCSpecApp(App):
         self._buttons_layout.add_widget(self._specs_layout)
 
     def _create_menu(self):
-        image = Image(source='/home/bajit/repos/pc-spec/pc_spec/app/logo.png',
+        image = Image(source=str(Path('pc_spec', 'app', 'rsc', 'logo.png')),
                       size_hint=(1, 1))
         self._menu_layout.add_widget(image)
 
