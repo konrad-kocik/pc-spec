@@ -18,7 +18,3 @@ jobs:
     - python: 3.8
       env: TOXENV=types-py38
       dist: xenial
-    - language: bash
-      os: windows
-      install: curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py && python get-pip.py && pip install -r requirements/build.txt
-      script: build.bat
