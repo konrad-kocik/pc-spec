@@ -18,7 +18,7 @@ jobs:
     - python: 3.8
       env: TOXENV=types-py38
       dist: xenial
-    - python: 3.8
+    - language: bash
       os: windows
       install: pip install -r requirements/build.txt
       script: build.bat
