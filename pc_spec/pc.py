@@ -75,6 +75,15 @@ class PC:
         if self.__component_exists(category):
             self.__components[category][param_name] = param_value
 
+    def remove_spec_param(self, category: str, param_name: str):
+        """
+        Removes given parameter from specification of component from given category.
+        :param category: type of component from which specification's parameter will be removed, i.e. 'cpu'
+        :param param_name: name of specification's parameter which will be removed, i.e. 'freq'
+        """
+        if self.__spec_param_exist(category, param_name):
+            del self.__components[category][param_name]
+
     def has_component(self, category: str) -> bool:
         """
         Checks whether component from given category exists.
@@ -93,12 +102,15 @@ class PC:
         :param param_name: name of specification's parameter to be checked, i.e. 'frequency'
         :return: True if parameter exists, False otherwise
         """
-        if category not in self.__components:
-            return False
-
-        param_names = [param_name.lower() for param_name in self.__components[category]]
-        return param_name.lower() in param_names
+        return self.__spec_param_exist(category, param_name)
 
     def __component_exists(self, category: str) -> bool:
         categories = [category.lower() for category in self.__components.keys()]
         return category.lower() in categories
+
+    def __spec_param_exist(self, category, param_name):
+        if not self.__component_exists(category):
+            return False
+
+        param_names = [param_name.lower() for param_name in self.__components[category]]
+        return param_name.lower() in param_names

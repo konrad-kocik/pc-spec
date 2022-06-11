@@ -24,17 +24,21 @@ class PCSpecApp(App):
                         'red': [200, 0, 0, 1]}
 
         self._main_layout = None
+        self._menu_layout = None
         self._buttons_layout = None
         self._pcs_layout = None
         self._components_layout = None
         self._specs_layout = None
 
+        self._remove_button = None
         self._pcs_buttons = []
         self._add_pc_button = None
         self._components_buttons = []
         self._add_component_button = None
         self._specs_buttons = []
         self._add_spec_button = None
+
+        self._selected_spec_button = None
 
         self._store = load_store(source_dir=Path(Path.home(), 'AppData', 'Local', 'PCSpec'))
         self._pc = None
@@ -45,7 +49,7 @@ class PCSpecApp(App):
 
     def build(self):
         self._create_layouts()
-        self._create_menu()
+        # self._create_menu()
         self._create_pcs_buttons()
         return self._main_layout
 
@@ -57,7 +61,7 @@ class PCSpecApp(App):
 
         self._menu_layout = BoxLayout(padding=border_size,
                                       orientation='horizontal',
-                                      size_hint=(0.04, 0.15))
+                                      size_hint=(1, 0.15))
         self._main_layout.add_widget(self._menu_layout)
 
         self._buttons_layout = BoxLayout(padding=0,
@@ -129,6 +133,8 @@ class PCSpecApp(App):
         self._pc = self._store.get_pc(selected.pc_name)
         self._color_buttons(buttons=self._pcs_buttons, pressed_button=selected)
         self._create_components_buttons()
+        self._selected_spec_button = None
+        self._clear_menu_buttons()
 
     def _create_components_buttons(self):
         self._components_buttons.clear()
@@ -176,6 +182,8 @@ class PCSpecApp(App):
         self._component = self._pc.components[selected.component_category]
         self._color_buttons(buttons=self._components_buttons, pressed_button=selected)
         self._create_specs_buttons()
+        self._selected_spec_button = None
+        self._clear_menu_buttons()
 
     def _create_specs_buttons(self):
         self._specs_buttons.clear()
@@ -227,6 +235,8 @@ class PCSpecApp(App):
         self._param_name = selected.param_name
         self._param_value = selected.param_value
         self._color_buttons(buttons=self._specs_buttons, pressed_button=selected)
+        self._create_remove_button(item_type='spec parameter', on_press=self._remove_spec)
+        self._selected_spec_button = selected
 
     def _color_buttons(self, buttons, pressed_button):
         for button in buttons:
@@ -239,6 +249,24 @@ class PCSpecApp(App):
         add_button.bind(on_press=on_press)
         target_layout.add_widget(add_button)
         return add_button
+
+    def _create_remove_button(self, item_type, on_press):
+        if not self._remove_button:
+            remove_button = Button(text=f'Remove {item_type}',
+                                   background_color=self._colors['mint'],
+                                   color=self._colors['black'])
+            remove_button.bind(on_press=on_press)
+            self._menu_layout.add_widget(remove_button)
+            self._remove_button = remove_button
+
+    def _remove_spec(self, _):
+        self._pc.remove_spec_param(self._component_category, self._param_name)
+        self._specs_layout.remove_widget(self._selected_spec_button)
+        self._clear_menu_buttons()
+
+    def _clear_menu_buttons(self):
+        self._menu_layout.clear_widgets()
+        self._remove_button = None
 
     def _show_error(self, widget):
         widget.foreground_color = self._colors['red']

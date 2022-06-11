@@ -25,14 +25,20 @@ def cpu():
 
 
 @fixture
-def cpu_intel_spec():
-    return {'name': 'Intel i7 9700K'}
+def cpu_intel_name():
+    return 'name', 'Intel i7 9700K'
 
 
 @fixture
-def cpu_intel_spec_with_freq(cpu_freq):
+def cpu_intel_spec(cpu_intel_name):
+    return {cpu_intel_name[0]: cpu_intel_name[1]}
+
+
+@fixture
+def cpu_intel_spec_with_freq(cpu_intel_name, cpu_freq):
+    name_name, name_value = cpu_intel_name
     freq_name, freq_value = cpu_freq
-    return {'name': 'Intel i7 9700K', freq_name: freq_value}
+    return {name_name: name_value, freq_name: freq_value}
 
 
 @fixture
@@ -134,6 +140,24 @@ def test_update_component_when_param_is_there_then_it_is_updated(pc_with_cpu, cp
     freq_value = '5.0 GHz'
     pc_with_cpu.update_component(category=cpu, param_name=freq_name, param_value=freq_value)
     assert pc_with_cpu.components == {cpu: {'name': 'Intel i7 9700K', freq_name: freq_value}}
+
+
+def test_remove_spec_param_when_component_not_there_then_nothing_is_removed(pc, cpu, cpu_freq):
+    freq_name, _ = cpu_freq
+    pc.remove_spec_param(category=cpu, param_name=freq_name)
+    assert pc.components == {}
+
+
+def test_remove_spec_param_when_param_not_there_then_nothing_is_removed(pc_with_cpu, cpu, cpu_intel_spec, cpu_freq):
+    freq_name, _ = cpu_freq
+    pc_with_cpu.remove_spec_param(category=cpu, param_name=freq_name)
+    assert pc_with_cpu.components == {cpu: cpu_intel_spec}
+
+
+def test_remove_spec_param_when_param_is_there_then_it_is_removed(pc_with_cpu, cpu, cpu_intel_name):
+    name, _ = cpu_intel_name
+    pc_with_cpu.remove_spec_param(category=cpu, param_name=name)
+    assert pc_with_cpu.components == {cpu: {}}
 
 
 def test_has_component_when_component_is_there_then_true_is_returned(pc_with_cpu, cpu):
