@@ -30,7 +30,6 @@ class PCSpecApp(App):
         self._components_layout = None
         self._specs_layout = None
 
-        self._remove_button = None
         self._pcs_buttons = []
         self._add_pc_button = None
         self._components_buttons = []
@@ -38,6 +37,7 @@ class PCSpecApp(App):
         self._specs_buttons = []
         self._add_spec_button = None
 
+        self._selected_component_button = None
         self._selected_spec_button = None
 
         self._store = load_store(source_dir=Path(Path.home(), 'AppData', 'Local', 'PCSpec'))
@@ -133,8 +133,9 @@ class PCSpecApp(App):
         self._pc = self._store.get_pc(selected.pc_name)
         self._color_buttons(buttons=self._pcs_buttons, pressed_button=selected)
         self._create_components_buttons()
+        self._selected_component_button = None
         self._selected_spec_button = None
-        self._clear_menu_buttons()
+        self._create_remove_buttons()
 
     def _create_components_buttons(self):
         self._components_buttons.clear()
@@ -181,9 +182,10 @@ class PCSpecApp(App):
         self._component_category = selected.component_category
         self._component = self._pc.components[selected.component_category]
         self._color_buttons(buttons=self._components_buttons, pressed_button=selected)
-        self._create_specs_buttons()
+        self._selected_component_button = selected
         self._selected_spec_button = None
-        self._clear_menu_buttons()
+        self._create_specs_buttons()
+        self._create_remove_buttons()
 
     def _create_specs_buttons(self):
         self._specs_buttons.clear()
@@ -235,8 +237,8 @@ class PCSpecApp(App):
         self._param_name = selected.param_name
         self._param_value = selected.param_value
         self._color_buttons(buttons=self._specs_buttons, pressed_button=selected)
-        self._create_remove_button(item_type='spec parameter', on_press=self._remove_spec)
         self._selected_spec_button = selected
+        self._create_remove_buttons()
 
     def _color_buttons(self, buttons, pressed_button):
         for button in buttons:
@@ -250,23 +252,40 @@ class PCSpecApp(App):
         target_layout.add_widget(add_button)
         return add_button
 
-    def _create_remove_button(self, item_type, on_press):
-        if not self._remove_button:
-            remove_button = Button(text=f'Remove {item_type}',
-                                   background_color=self._colors['mint'],
-                                   color=self._colors['black'])
-            remove_button.bind(on_press=on_press)
-            self._menu_layout.add_widget(remove_button)
-            self._remove_button = remove_button
+    def _create_remove_buttons(self):
+        self._menu_layout.clear_widgets()
+
+        if self._selected_component_button:
+            self._create_remove_component_button()
+
+        if self._selected_spec_button:
+            self._create_remove_spec_button()
+
+    def _create_remove_component_button(self):
+        remove_button = Button(text='Remove component',
+                               background_color=self._colors['mint'],
+                               color=self._colors['black'])
+        remove_button.bind(on_press=self._remove_component)
+        self._menu_layout.add_widget(remove_button)
+
+    def _create_remove_spec_button(self):
+        remove_button = Button(text='Remove spec param',
+                               background_color=self._colors['mint'],
+                               color=self._colors['black'])
+        remove_button.bind(on_press=self._remove_spec)
+        self._menu_layout.add_widget(remove_button)
+
+    def _remove_component(self, _):
+        self._pc.remove_component(self._component_category)
+        self._components_layout.remove_widget(self._selected_component_button)
+        self._selected_component_button = None
+        self._create_remove_buttons()
 
     def _remove_spec(self, _):
         self._pc.remove_spec_param(self._component_category, self._param_name)
         self._specs_layout.remove_widget(self._selected_spec_button)
-        self._clear_menu_buttons()
-
-    def _clear_menu_buttons(self):
-        self._menu_layout.clear_widgets()
-        self._remove_button = None
+        self._selected_spec_button = None
+        self._create_remove_buttons()
 
     def _show_error(self, widget):
         widget.foreground_color = self._colors['red']
