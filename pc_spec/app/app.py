@@ -37,6 +37,7 @@ class PCSpecApp(App):
         self._specs_buttons = []
         self._add_spec_button = None
 
+        self._selected_pc_button = None
         self._selected_component_button = None
         self._selected_spec_button = None
 
@@ -133,6 +134,7 @@ class PCSpecApp(App):
         self._pc = self._store.get_pc(selected.pc_name)
         self._color_buttons(buttons=self._pcs_buttons, pressed_button=selected)
         self._create_components_buttons()
+        self._selected_pc_button = selected
         self._selected_component_button = None
         self._selected_spec_button = None
         self._create_remove_buttons()
@@ -255,25 +257,27 @@ class PCSpecApp(App):
     def _create_remove_buttons(self):
         self._menu_layout.clear_widgets()
 
+        if self._selected_pc_button:
+            self._create_remove_button(item_type='PC', on_press=self._remove_pc)
+
         if self._selected_component_button:
-            self._create_remove_component_button()
+            self._create_remove_button(item_type='component', on_press=self._remove_component)
 
         if self._selected_spec_button:
-            self._create_remove_spec_button()
+            self._create_remove_button(item_type='spec param', on_press=self._remove_spec)
 
-    def _create_remove_component_button(self):
-        remove_button = Button(text='Remove component',
+    def _create_remove_button(self, item_type, on_press):
+        remove_button = Button(text=f'Remove {item_type}',
                                background_color=self._colors['mint'],
                                color=self._colors['black'])
-        remove_button.bind(on_press=self._remove_component)
+        remove_button.bind(on_press=on_press)
         self._menu_layout.add_widget(remove_button)
 
-    def _create_remove_spec_button(self):
-        remove_button = Button(text='Remove spec param',
-                               background_color=self._colors['mint'],
-                               color=self._colors['black'])
-        remove_button.bind(on_press=self._remove_spec)
-        self._menu_layout.add_widget(remove_button)
+    def _remove_pc(self, _):
+        self._store.remove_pc(self._pc.name)
+        self._pcs_layout.remove_widget(self._selected_pc_button)
+        self._selected_pc_button = None
+        self._create_remove_buttons()
 
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
