@@ -184,9 +184,9 @@ class PCSpecApp(App):
         self._component_category = selected.component_category
         self._component = self._pc.components[selected.component_category]
         self._color_buttons(buttons=self._components_buttons, pressed_button=selected)
+        self._create_specs_buttons()
         self._selected_component_button = selected
         self._selected_spec_button = None
-        self._create_specs_buttons()
         self._create_remove_buttons()
 
     def _create_specs_buttons(self):
@@ -275,19 +275,45 @@ class PCSpecApp(App):
 
     def _remove_pc(self, _):
         self._store.remove_pc(self._pc.name)
+
+        self._pc = None
+        self._component_category = None
+        self._component = None
+        self._param_name = None
+        self._param_value = None
+
         self._pcs_layout.remove_widget(self._selected_pc_button)
+        self._components_layout.clear_widgets()
+        self._specs_layout.clear_widgets()
+
         self._selected_pc_button = None
+        self._selected_component_button = None
+        self._selected_spec_button = None
         self._create_remove_buttons()
 
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
+
+        self._component_category = None
+        self._component = None
+        self._param_name = None
+        self._param_value = None
+
         self._components_layout.remove_widget(self._selected_component_button)
+        self._specs_layout.clear_widgets()
+
         self._selected_component_button = None
+        self._selected_spec_button = None
         self._create_remove_buttons()
 
     def _remove_spec(self, _):
         self._pc.remove_spec_param(self._component_category, self._param_name)
+
+        self._param_name = None
+        self._param_value = None
+
         self._specs_layout.remove_widget(self._selected_spec_button)
+
         self._selected_spec_button = None
         self._create_remove_buttons()
 
