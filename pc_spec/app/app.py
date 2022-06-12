@@ -28,25 +28,25 @@ class PCSpecApp(App):
         self._buttons_layout = None
         self._pcs_layout = None
         self._components_layout = None
-        self._specs_layout = None
+        self._spec_layout = None
 
         self._pcs_buttons = []
         self._add_pc_button = None
         self._components_buttons = []
         self._add_component_button = None
-        self._specs_buttons = []
-        self._add_spec_button = None
+        self._spec_params_buttons = []
+        self._add_spec_param_button = None
 
         self._selected_pc_button = None
         self._selected_component_button = None
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
 
         self._store = load_store(source_dir=Path(Path.home(), 'AppData', 'Local', 'PCSpec'))
         self._pc = None
         self._component_category = None
         self._component = None
-        self._param_name = None
-        self._param_value = None
+        self._spec_param_name = None
+        self._spec_param_value = None
 
     def build(self):
         self._create_layouts()
@@ -82,10 +82,10 @@ class PCSpecApp(App):
                                             size_hint=(0.5, 1))
         self._buttons_layout.add_widget(self._components_layout)
 
-        self._specs_layout = BoxLayout(padding=0,
-                                       spacing=border_size,
-                                       orientation='vertical')
-        self._buttons_layout.add_widget(self._specs_layout)
+        self._spec_layout = BoxLayout(padding=0,
+                                      spacing=border_size,
+                                      orientation='vertical')
+        self._buttons_layout.add_widget(self._spec_layout)
 
     def _create_menu(self):
         image = Image(source=str(Path('pc_spec', 'app', 'rsc', 'logo.png')),
@@ -127,24 +127,21 @@ class PCSpecApp(App):
         self._create_pc_button(pc_name=pc_name)
         self._pcs_layout.add_widget(self._add_pc_button)
 
-    def _cancel_adding_pc(self, pc_text_input):
-        pass
-
     def _select_pc(self, selected):
         self._pc = self._store.get_pc(selected.pc_name)
-        self._color_buttons(buttons=self._pcs_buttons, pressed_button=selected)
+        self._color_buttons(buttons=self._pcs_buttons, selected_button=selected)
         self._create_components_buttons()
         self._selected_pc_button = selected
         self._selected_component_button = None
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
         self._create_remove_buttons()
 
     def _create_components_buttons(self):
         self._components_buttons.clear()
         self._components_layout.clear_widgets()
 
-        self._specs_buttons.clear()
-        self._specs_layout.clear_widgets()
+        self._spec_params_buttons.clear()
+        self._spec_layout.clear_widgets()
 
         for component_category in self._pc.components:
             self._create_component_button(component_category)
@@ -183,68 +180,69 @@ class PCSpecApp(App):
     def _select_component(self, selected):
         self._component_category = selected.component_category
         self._component = self._pc.components[selected.component_category]
-        self._color_buttons(buttons=self._components_buttons, pressed_button=selected)
-        self._create_specs_buttons()
+        self._color_buttons(buttons=self._components_buttons, selected_button=selected)
+        self._create_spec_params_buttons()
         self._selected_component_button = selected
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
         self._create_remove_buttons()
 
-    def _create_specs_buttons(self):
-        self._specs_buttons.clear()
-        self._specs_layout.clear_widgets()
+    def _create_spec_params_buttons(self):
+        self._spec_params_buttons.clear()
+        self._spec_layout.clear_widgets()
 
-        for param_name, param_value in self._component.items():
-            self._create_spec_button(param_name, param_value)
+        for spec_param_name, spec_param_value in self._component.items():
+            self._create_spec_param_button(spec_param_name, spec_param_value)
 
-        self._add_spec_button = self._create_add_button(target_layout=self._specs_layout,
-                                                        on_press=self._add_empty_spec)
+        self._add_spec_param_button = self._create_add_button(target_layout=self._spec_layout,
+                                                              on_press=self._add_empty_spec)
 
-    def _create_spec_button(self, param_name, param_value):
-        button_text = param_value if param_name.lower() == 'name' else f'{param_name.upper()}: {param_value}'
-        spec_button = Button(text=button_text,
-                             background_color=self._colors['mint'],
-                             color=self._colors['black'])
-        spec_button.bind(on_press=self._select_spec)
-        spec_button.param_name = param_name
-        spec_button.param_value = param_value
-        self._specs_buttons.append(spec_button)
-        self._specs_layout.add_widget(spec_button)
+    def _create_spec_param_button(self, spec_param_name, spec_param_value):
+        button_text = spec_param_value if spec_param_name.lower() == 'name' \
+            else f'{spec_param_name.upper()}: {spec_param_value}'
+        spec_param_button = Button(text=button_text,
+                                   background_color=self._colors['mint'],
+                                   color=self._colors['black'])
+        spec_param_button.bind(on_press=self._select_spec_param)
+        spec_param_button.spec_param_name = spec_param_name
+        spec_param_button.spec_param_value = spec_param_value
+        self._spec_params_buttons.append(spec_param_button)
+        self._spec_layout.add_widget(spec_param_button)
 
     def _add_empty_spec(self, _):
-        self._specs_layout.remove_widget(self._add_spec_button)
-        spec_text_input = TextInput(multiline=False)
-        spec_text_input.background_color = self._colors['mint']
-        spec_text_input.bind(on_text_validate=self._save_spec)
-        self._specs_layout.add_widget(spec_text_input)
+        self._spec_layout.remove_widget(self._add_spec_param_button)
+        spec_param_text_input = TextInput(multiline=False)
+        spec_param_text_input.background_color = self._colors['mint']
+        spec_param_text_input.bind(on_text_validate=self._save_spec_param)
+        self._spec_layout.add_widget(spec_param_text_input)
 
-    def _save_spec(self, spec_text_input):
-        if ':' not in spec_text_input.text:
-            self._show_error(spec_text_input)
+    def _save_spec_param(self, spec_param_text_input):
+        if ':' not in spec_param_text_input.text:
+            self._show_error(spec_param_text_input)
             return
 
-        param_name, param_value = spec_text_input.text.split(':')
-        param_name = param_name.rstrip()
-        param_value = param_value.lstrip()
+        spec_param_name, spec_param_value = spec_param_text_input.text.split(':')
+        spec_param_name = spec_param_name.rstrip()
+        spec_param_value = spec_param_value.lstrip()
 
-        if self._pc.has_spec_param(category=self._component_category, param_name=param_name):
-            self._show_error(spec_text_input)
+        if self._pc.has_spec_param(category=self._component_category, spec_param_name=spec_param_name):
+            self._show_error(spec_param_text_input)
             return
 
-        self._pc.update_component(self._component_category, param_name, param_value)
-        self._specs_layout.remove_widget(spec_text_input)
-        self._create_spec_button(param_name=param_name, param_value=param_value)
-        self._specs_layout.add_widget(self._add_spec_button)
+        self._pc.update_component(self._component_category, spec_param_name, spec_param_value)
+        self._spec_layout.remove_widget(spec_param_text_input)
+        self._create_spec_param_button(spec_param_name=spec_param_name, spec_param_value=spec_param_value)
+        self._spec_layout.add_widget(self._add_spec_param_button)
 
-    def _select_spec(self, selected):
-        self._param_name = selected.param_name
-        self._param_value = selected.param_value
-        self._color_buttons(buttons=self._specs_buttons, pressed_button=selected)
-        self._selected_spec_button = selected
+    def _select_spec_param(self, selected):
+        self._spec_param_name = selected.spec_param_name
+        self._spec_param_value = selected.spec_param_value
+        self._color_buttons(buttons=self._spec_params_buttons, selected_button=selected)
+        self._selected_spec_param_button = selected
         self._create_remove_buttons()
 
-    def _color_buttons(self, buttons, pressed_button):
+    def _color_buttons(self, buttons, selected_button):
         for button in buttons:
-            button.background_color = self._colors['pink'] if button is pressed_button else self._colors['mint']
+            button.background_color = self._colors['pink'] if button is selected_button else self._colors['mint']
 
     def _create_add_button(self, target_layout, on_press):
         add_button = Button(text='+',
@@ -263,8 +261,8 @@ class PCSpecApp(App):
         if self._selected_component_button:
             self._create_remove_button(item_type='component', on_press=self._remove_component)
 
-        if self._selected_spec_button:
-            self._create_remove_button(item_type='spec param', on_press=self._remove_spec)
+        if self._selected_spec_param_button:
+            self._create_remove_button(item_type='spec param', on_press=self._remove_spec_param)
 
     def _create_remove_button(self, item_type, on_press):
         remove_button = Button(text=f'Remove {item_type}',
@@ -279,16 +277,16 @@ class PCSpecApp(App):
         self._pc = None
         self._component_category = None
         self._component = None
-        self._param_name = None
-        self._param_value = None
+        self._spec_param_name = None
+        self._spec_param_value = None
 
         self._pcs_layout.remove_widget(self._selected_pc_button)
         self._components_layout.clear_widgets()
-        self._specs_layout.clear_widgets()
+        self._spec_layout.clear_widgets()
 
         self._selected_pc_button = None
         self._selected_component_button = None
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
         self._create_remove_buttons()
 
     def _remove_component(self, _):
@@ -296,25 +294,25 @@ class PCSpecApp(App):
 
         self._component_category = None
         self._component = None
-        self._param_name = None
-        self._param_value = None
+        self._spec_param_name = None
+        self._spec_param_value = None
 
         self._components_layout.remove_widget(self._selected_component_button)
-        self._specs_layout.clear_widgets()
+        self._spec_layout.clear_widgets()
 
         self._selected_component_button = None
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
         self._create_remove_buttons()
 
-    def _remove_spec(self, _):
-        self._pc.remove_spec_param(self._component_category, self._param_name)
+    def _remove_spec_param(self, _):
+        self._pc.remove_spec_param(self._component_category, self._spec_param_name)
 
-        self._param_name = None
-        self._param_value = None
+        self._spec_param_name = None
+        self._spec_param_value = None
 
-        self._specs_layout.remove_widget(self._selected_spec_button)
+        self._spec_layout.remove_widget(self._selected_spec_param_button)
 
-        self._selected_spec_button = None
+        self._selected_spec_param_button = None
         self._create_remove_buttons()
 
     def _show_error(self, widget):

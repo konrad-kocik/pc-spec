@@ -49,16 +49,16 @@ def test_pcs_management_in_store():
     assert pc.has_component(category='mobo')
     assert pc.has_component(category='MOBO')
 
-    assert not pc.has_spec_param(category='cpu', param_name='name')
+    assert not pc.has_spec_param(category='cpu', spec_param_name='name')
 
     pc.add_component(category='cpu', spec={'name': 'Intel i7 9700K'})
     assert pc.components == {'mobo': {},
                              'cpu': {'name': 'Intel i7 9700K'}}
 
-    assert pc.has_spec_param(category='cpu', param_name='name')
-    assert pc.has_spec_param(category='cpu', param_name='NAME')
-    assert not pc.has_spec_param(category='cpu', param_name='frequency')
-    assert not pc.has_spec_param(category='cpu', param_name='FREQUENCY')
+    assert pc.has_spec_param(category='cpu', spec_param_name='name')
+    assert pc.has_spec_param(category='cpu', spec_param_name='NAME')
+    assert not pc.has_spec_param(category='cpu', spec_param_name='frequency')
+    assert not pc.has_spec_param(category='cpu', spec_param_name='FREQUENCY')
 
     pc.add_component(category='cpu', spec={'name': 'AMD Ryzen 5 5900X'})
     assert pc.components == {'mobo': {},
@@ -95,22 +95,22 @@ def test_pcs_management_in_store():
                              'cpu': {'name': 'AMD Ryzen 5 5900X'},
                              'gpu': {}}
 
-    pc.update_component(category='ram', param_name='frequency', param_value='3200 MHz')
+    pc.update_component(category='ram', spec_param_name='frequency', spec_param_value='3200 MHz')
     assert pc.components == {'mobo': {},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'},
                              'gpu': {}}
 
-    pc.update_component(category='mobo', param_name='name', param_value='ASRock Z390 EXTREME4')
+    pc.update_component(category='mobo', spec_param_name='name', spec_param_value='ASRock Z390 EXTREME4')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'},
                              'gpu': {}}
 
-    pc.update_component(category='mobo', param_name='format', param_value='ITX')
+    pc.update_component(category='mobo', spec_param_name='format', spec_param_value='ITX')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ITX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'},
                              'gpu': {}}
 
-    pc.update_component(category='mobo', param_name='format', param_value='ATX')
+    pc.update_component(category='mobo', spec_param_name='format', spec_param_value='ATX')
     assert pc.components == {'mobo': {'name': 'ASRock Z390 EXTREME4', 'format': 'ATX'},
                              'cpu': {'name': 'AMD Ryzen 5 5900X'},
                              'gpu': {}}

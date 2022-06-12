@@ -56,33 +56,33 @@ class PC:
         Replaces specification of component from given category with new one.
         If component with given category doesn't exist then nothing will change.
         :param category: type of component which specification will be swapped, i.e. 'cpu'
-        :param spec: component's specification which will replace old one, i.e. {'name': 'i7-9700K', 'freq': '4 GHz'};
+        :param spec: specification of component which will replace old one, i.e. {'name': 'i7-9700K', 'freq': '4 GHz'};
                      defaults to None (empty specification, results in empty dict)
         """
         if self.__component_exists(category):
             self.__components[category] = spec if spec else {}
 
-    def update_component(self, category: str, param_name: str, param_value: str):
+    def update_component(self, category: str, spec_param_name: str, spec_param_value: str):
         """
         Updates specification of component from given category.
         If component with given category doesn't exist then nothing will change.
         If specification's parameter with given name doesn't exist then it will be added with given value.
         If specification's parameter with given name already exists then it's value will be updated with given one.
         :param category: type of component which specification will be updated, i.e. 'cpu'
-        :param param_name: name of specification's parameter which will be updated, i.e. 'freq'
-        :param param_value: value of specification's parameter which will replace old one, i.e. '4 GHz'
+        :param spec_param_name: name of specification's parameter which will be updated, i.e. 'freq'
+        :param spec_param_value: value of specification's parameter which will replace old one, i.e. '4 GHz'
         """
         if self.__component_exists(category):
-            self.__components[category][param_name] = param_value
+            self.__components[category][spec_param_name] = spec_param_value
 
-    def remove_spec_param(self, category: str, param_name: str):
+    def remove_spec_param(self, category: str, spec_param_name: str):
         """
         Removes given parameter from specification of component from given category.
         :param category: type of component from which specification's parameter will be removed, i.e. 'cpu'
-        :param param_name: name of specification's parameter which will be removed, i.e. 'freq'
+        :param spec_param_name: name of specification's parameter which will be removed, i.e. 'freq'
         """
-        if self.__spec_param_exist(category, param_name):
-            del self.__components[category][param_name]
+        if self.__spec_param_exist(category, spec_param_name):
+            del self.__components[category][spec_param_name]
 
     def has_component(self, category: str) -> bool:
         """
@@ -93,24 +93,24 @@ class PC:
         """
         return self.__component_exists(category)
 
-    def has_spec_param(self, category: str, param_name: str) -> bool:
+    def has_spec_param(self, category: str, spec_param_name: str) -> bool:
         """
         Checks whether specification of component from given category has parameter with given name.
         Is case-sensitive for category (i.e. 'cpu' != 'CPU').
-        Is case-insensitive for param name (i.e. 'frequency' == 'Frequency').
+        Is case-insensitive for specification's param name (i.e. 'frequency' == 'Frequency').
         :param category: type of component to be checked, i.e. 'cpu'
-        :param param_name: name of specification's parameter to be checked, i.e. 'frequency'
-        :return: True if parameter exists, False otherwise
+        :param spec_param_name: name of specification's parameter to be checked, i.e. 'frequency'
+        :return: True if specification parameter exists, False otherwise
         """
-        return self.__spec_param_exist(category, param_name)
+        return self.__spec_param_exist(category, spec_param_name)
 
     def __component_exists(self, category: str) -> bool:
         categories = [category.lower() for category in self.__components.keys()]
         return category.lower() in categories
 
-    def __spec_param_exist(self, category, param_name):
+    def __spec_param_exist(self, category, spec_param_name):
         if not self.__component_exists(category):
             return False
 
-        param_names = [param_name.lower() for param_name in self.__components[category]]
-        return param_name.lower() in param_names
+        spec_param_names = [spec_param_name.lower() for spec_param_name in self.__components[category]]
+        return spec_param_name.lower() in spec_param_names
