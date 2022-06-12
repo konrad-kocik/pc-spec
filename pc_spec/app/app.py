@@ -7,7 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.textinput import TextInput
 
-from pc_spec.data import load_store
+from pc_spec.data import load_store, save_store
 
 
 class PCSpecApp(App):
@@ -41,7 +41,9 @@ class PCSpecApp(App):
         self._selected_component_button = None
         self._selected_spec_param_button = None
 
-        self._store = load_store(source_dir=Path(Path.home(), 'AppData', 'Local', 'PCSpec'))
+        self._store_path = Path(Path.home(), 'AppData', 'Local', 'PCSpec')
+        self._store = load_store(source_dir=self._store_path)
+
         self._pc = None
         self._component_category = None
         self._component = None
@@ -123,6 +125,7 @@ class PCSpecApp(App):
             return
 
         self._store.add_pc(name=pc_name)
+        self._save_store()
         self._pcs_layout.remove_widget(pc_text_input)
         self._create_pc_button(pc_name=pc_name)
         self._pcs_layout.add_widget(self._add_pc_button)
@@ -173,6 +176,7 @@ class PCSpecApp(App):
             return
 
         self._pc.add_component(category=component_category)
+        self._save_store()
         self._components_layout.remove_widget(component_text_input)
         self._create_component_button(component_category=component_category)
         self._components_layout.add_widget(self._add_component_button)
@@ -229,6 +233,7 @@ class PCSpecApp(App):
             return
 
         self._pc.update_component(self._component_category, spec_param_name, spec_param_value)
+        self._save_store()
         self._spec_layout.remove_widget(spec_param_text_input)
         self._create_spec_param_button(spec_param_name=spec_param_name, spec_param_value=spec_param_value)
         self._spec_layout.add_widget(self._add_spec_param_button)
@@ -239,10 +244,6 @@ class PCSpecApp(App):
         self._color_buttons(buttons=self._spec_params_buttons, selected_button=selected)
         self._selected_spec_param_button = selected
         self._create_remove_buttons()
-
-    def _color_buttons(self, buttons, selected_button):
-        for button in buttons:
-            button.background_color = self._colors['pink'] if button is selected_button else self._colors['mint']
 
     def _create_add_button(self, target_layout, on_press):
         add_button = Button(text='+',
@@ -273,6 +274,7 @@ class PCSpecApp(App):
 
     def _remove_pc(self, _):
         self._store.remove_pc(self._pc.name)
+        self._save_store()
 
         self._pc = None
         self._component_category = None
@@ -291,6 +293,7 @@ class PCSpecApp(App):
 
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
+        self._save_store()
 
         self._component_category = None
         self._component = None
@@ -306,6 +309,7 @@ class PCSpecApp(App):
 
     def _remove_spec_param(self, _):
         self._pc.remove_spec_param(self._component_category, self._spec_param_name)
+        self._save_store()
 
         self._spec_param_name = None
         self._spec_param_value = None
@@ -314,6 +318,13 @@ class PCSpecApp(App):
 
         self._selected_spec_param_button = None
         self._create_remove_buttons()
+
+    def _save_store(self):
+        save_store(self._store, target_dir=self._store_path)
+
+    def _color_buttons(self, buttons, selected_button):
+        for button in buttons:
+            button.background_color = self._colors['pink'] if button is selected_button else self._colors['mint']
 
     def _show_error(self, widget):
         widget.foreground_color = self._colors['red']
