@@ -7,7 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.textinput import TextInput
 
-from pc_spec.data import load_store, save_store
+from pc_spec.data import load_store, save_store, backup_store
 
 
 class PCSpecApp(App):
@@ -41,8 +41,9 @@ class PCSpecApp(App):
         self._selected_component_button = None
         self._selected_spec_param_button = None
 
-        self._store_path = Path(Path.home(), 'AppData', 'Local', 'PCSpec')
-        self._store = load_store(source_dir=self._store_path)
+        self._store_dir_path = Path(Path.home(), 'AppData', 'Local', 'PCSpec')
+        backup_store(source_dir=self._store_dir_path, target_dir=self._store_dir_path)
+        self._store = load_store(source_dir=self._store_dir_path)
 
         self._pc = None
         self._component_category = None
@@ -320,7 +321,7 @@ class PCSpecApp(App):
         self._create_remove_buttons()
 
     def _save_store(self):
-        save_store(self._store, target_dir=self._store_path)
+        save_store(self._store, target_dir=self._store_dir_path)
 
     def _color_buttons(self, buttons, selected_button):
         for button in buttons:

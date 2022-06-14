@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 from pytest import fixture
 
-from pc_spec.data import save_store, load_store
+from pc_spec.data import save_store, load_store, backup_store
 
 
 @fixture
@@ -91,6 +91,16 @@ def create_test_file(test_file_path, create_empty_test_file, pc_1_name, pc_1_com
         dump(store, test_file)
 
 
+@fixture
+def test_backup_file_path(test_dir_path):
+    return Path(test_dir_path, 'store.bak.json')
+
+
+@fixture
+def test_second_backup_file_path(test_dir_path):
+    return Path(test_dir_path, 'store.bak2.json')
+
+
 def test_save_store_when_target_dir_is_not_there_then_it_is_created(
         empty_store, test_dir_path, test_file_path, remove_test_dir):
     save_store(store=empty_store, target_dir=test_dir_path)
@@ -138,6 +148,38 @@ def test_load_store_when_file_is_there_then_store_is_loaded(
     assert pc_1.components == pc_1_components
     assert pc_2.name == pc_2_name
     assert pc_2.components == pc_2_components
+
+
+def test_backup_store_when_file_is_not_there_then_backup_is_not_created(
+        test_dir_path, test_backup_file_path, create_test_dir, remove_test_dir):
+    backup_store(source_dir=test_dir_path, target_dir=test_dir_path)
+    assert not test_backup_file_path.is_file()
+
+
+def test_backup_store_when_file_is_there_then_backup_is_created(
+        store, test_dir_path, test_backup_file_path, create_test_file, remove_test_dir):
+    content = [{store.pcs[0].name: store.pcs[0].components},
+               {store.pcs[1].name: store.pcs[1].components}]
+    backup_store(source_dir=test_dir_path, target_dir=test_dir_path)
+    __assert_json_file_contains(content=content, file_path=test_backup_file_path)
+
+
+def test_backup_store_when_backup_already_exists_then_second_backup_is_created(
+        store, test_dir_path, test_file_path, test_backup_file_path, test_second_backup_file_path, create_test_file,
+        remove_test_dir):
+    old_content = [{store.pcs[0].name: store.pcs[0].components},
+                   {store.pcs[1].name: store.pcs[1].components}]
+    backup_store(source_dir=test_dir_path, target_dir=test_dir_path)
+
+    new_content = [{'new_pc': {'ram': {'name': 'HyperX'},
+                               'mobo': {'name': 'AsRock'}}}]
+
+    with open(test_file_path, 'w') as test_file:
+        dump(new_content, test_file)
+
+    backup_store(source_dir=test_dir_path, target_dir=test_dir_path)
+    __assert_json_file_contains(content=new_content, file_path=test_backup_file_path)
+    __assert_json_file_contains(content=old_content, file_path=test_second_backup_file_path)
 
 
 def __assert_json_file_contains(content, file_path):

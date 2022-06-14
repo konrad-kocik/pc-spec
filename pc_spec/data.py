@@ -31,8 +31,39 @@ def load_store(source_dir: Path) -> Store:
     return Store(__get_pcs_from_json_file(file_path)) if file_path.is_file() else Store()
 
 
+def backup_store(source_dir: Path, target_dir: Path):
+    """
+    Creates backup copy of original store JSON file.
+    If original store JSON file doesn't exist then backup copy is not created.
+    If backup copy already exists then 3 files will be created:
+        - original file (store.json)
+        - new backup file (store.bak.json) with content from original file
+        - second backup file (store.bak2.json) with content from old backup file
+    :param source_dir: path to directory which contains store JSON file
+    :param target_dir: path to directory where backup JSON file(s) will be created
+    """
+    file_path = Path(source_dir, __get_store_file_name())
+
+    if file_path.is_file():
+        backup_file_path = Path(target_dir, __get_store_backup_file_name())
+
+        if backup_file_path.is_file():
+            second_backup_file_path = Path(target_dir, __get_store_second_backup_file_name())
+            second_backup_file_path.write_text(backup_file_path.read_text())
+
+        backup_file_path.write_text(file_path.read_text())
+
+
 def __get_store_file_name() -> str:
     return 'store.json'
+
+
+def __get_store_backup_file_name() -> str:
+    return 'store.bak.json'
+
+
+def __get_store_second_backup_file_name() -> str:
+    return 'store.bak2.json'
 
 
 def __create_dir_if_necessary(dir_path: Path):
