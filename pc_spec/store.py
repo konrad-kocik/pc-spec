@@ -60,8 +60,42 @@ class Store:
         """
         return bool(self.__search_pc(name))
 
+    def move_pc_up(self, name: str):
+        """
+        Moves PC up in the store.
+        If PC with given name doesn't exist then nothing will change.
+        If PC with given name is on the top then nothing will change.
+        :param name: name of PC to be moved up.
+        """
+        pc = self.__search_pc(name)
+
+        if pc:
+            pc_id = self.__pcs.index(pc)
+
+            if pc_id > 0:
+                self.__move_pc(pc, pc_id - 1)
+
+    def move_pc_down(self, name: str):
+        """
+        Moves PC down in the store.
+        If PC with given name doesn't exist then nothing will change.
+        If PC with given name is on the bottom then nothing will change.
+        :param name: name of PC to be moved down.
+        """
+        pc = self.__search_pc(name)
+
+        if pc:
+            pc_id = self.__pcs.index(pc)
+
+            if pc_id < len(self.__pcs) - 1:
+                self.__move_pc(pc, pc_id + 1)
+
     def __search_pc(self, name: str) -> Optional[PC]:
         for pc in self.__pcs:
             if pc.name.lower() == name.lower():
                 return pc
         return None
+
+    def __move_pc(self, pc, new_id):
+        self.__pcs.remove(pc)
+        self.__pcs.insert(new_id, pc)

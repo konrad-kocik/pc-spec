@@ -24,8 +24,11 @@ class PCSpecApp(App):
                         'red': [200, 0, 0, 1]}
 
         self._main_layout = None
-        self._menu_layout = None
-        self._buttons_layout = None
+        self._actions_layout = None
+        self._pc_actions_layout = None
+        self._component_actions_layout = None
+        self._spec_param_actions_layout = None
+        self._store_layout = None
         self._pcs_layout = None
         self._components_layout = None
         self._spec_layout = None
@@ -59,41 +62,59 @@ class PCSpecApp(App):
 
     def _create_layouts(self):
         border_size = 3
+        padding = 0
 
-        self._main_layout = BoxLayout(padding=0,
-                                      orientation='vertical')
+        self._main_layout = BoxLayout(padding=padding, spacing=border_size, orientation='vertical')
+        self._create_actions_layout(border_size=border_size, padding=padding)
+        self._create_store_layout(border_size=border_size, padding=padding)
 
-        self._menu_layout = BoxLayout(padding=border_size,
-                                      orientation='horizontal',
-                                      size_hint=(1, 0.15))
-        self._main_layout.add_widget(self._menu_layout)
-
-        self._buttons_layout = BoxLayout(padding=0,
+    def _create_actions_layout(self, border_size, padding):
+        self._actions_layout = BoxLayout(padding=padding,
                                          spacing=border_size,
-                                         orientation='horizontal')
-        self._main_layout.add_widget(self._buttons_layout)
+                                         orientation='horizontal',
+                                         size_hint=(1, 0.15))
+        self._main_layout.add_widget(self._actions_layout)
 
-        self._pcs_layout = BoxLayout(padding=0,
+        self._pc_actions_layout = BoxLayout(padding=padding,
+                                            spacing=border_size,
+                                            orientation='horizontal',
+                                            size_hint=(0.5, 1))
+        self._actions_layout.add_widget(self._pc_actions_layout)
+
+        self._component_actions_layout = BoxLayout(padding=padding,
+                                                   spacing=border_size,
+                                                   orientation='horizontal',
+                                                   size_hint=(0.5, 1))
+        self._actions_layout.add_widget(self._component_actions_layout)
+
+        self._spec_param_actions_layout = BoxLayout(padding=padding,
+                                                    spacing=border_size,
+                                                    orientation='horizontal')
+        self._actions_layout.add_widget(self._spec_param_actions_layout)
+
+    def _create_store_layout(self, border_size, padding):
+        self._store_layout = BoxLayout(padding=padding,
+                                       spacing=border_size,
+                                       orientation='horizontal',
+                                       size_hint=(1, 0.85))
+        self._main_layout.add_widget(self._store_layout)
+
+        self._pcs_layout = BoxLayout(padding=padding,
                                      spacing=border_size,
                                      orientation='vertical',
                                      size_hint=(0.5, 1))
-        self._buttons_layout.add_widget(self._pcs_layout)
+        self._store_layout.add_widget(self._pcs_layout)
 
-        self._components_layout = BoxLayout(padding=0,
+        self._components_layout = BoxLayout(padding=padding,
                                             spacing=border_size,
                                             orientation='vertical',
                                             size_hint=(0.5, 1))
-        self._buttons_layout.add_widget(self._components_layout)
+        self._store_layout.add_widget(self._components_layout)
 
-        self._spec_layout = BoxLayout(padding=0,
+        self._spec_layout = BoxLayout(padding=padding,
                                       spacing=border_size,
                                       orientation='vertical')
-        self._buttons_layout.add_widget(self._spec_layout)
-
-    def _create_menu(self):
-        image = Image(source=str(Path('pc_spec', 'app', 'rsc', 'logo.png')),
-                      size_hint=(1, 1))
-        self._menu_layout.add_widget(image)
+        self._store_layout.add_widget(self._spec_layout)
 
     def _create_pcs_buttons(self):
         for pc in self._store.pcs:
@@ -116,6 +137,7 @@ class PCSpecApp(App):
         pc_text_input = TextInput(multiline=False)
         pc_text_input.background_color = self._colors['mint']
         pc_text_input.bind(on_text_validate=self._save_pc)
+        self._add_pc_button = pc_text_input
         self._pcs_layout.add_widget(pc_text_input)
 
     def _save_pc(self, pc_text_input):
@@ -129,7 +151,8 @@ class PCSpecApp(App):
         self._save_store()
         self._pcs_layout.remove_widget(pc_text_input)
         self._create_pc_button(pc_name=pc_name)
-        self._pcs_layout.add_widget(self._add_pc_button)
+        self._add_pc_button = self._create_add_button(target_layout=self._pcs_layout,
+                                                      on_press=self._add_empty_pc)
 
     def _select_pc(self, selected):
         self._pc = self._store.get_pc(selected.pc_name)
@@ -138,7 +161,7 @@ class PCSpecApp(App):
         self._selected_pc_button = selected
         self._selected_component_button = None
         self._selected_spec_param_button = None
-        self._create_remove_buttons()
+        self._create_action_buttons()
 
     def _create_components_buttons(self):
         self._components_buttons.clear()
@@ -167,6 +190,7 @@ class PCSpecApp(App):
         component_text_input = TextInput(multiline=False)
         component_text_input.background_color = self._colors['mint']
         component_text_input.bind(on_text_validate=self._save_component)
+        self._add_component_button = component_text_input
         self._components_layout.add_widget(component_text_input)
 
     def _save_component(self, component_text_input):
@@ -180,7 +204,8 @@ class PCSpecApp(App):
         self._save_store()
         self._components_layout.remove_widget(component_text_input)
         self._create_component_button(component_category=component_category)
-        self._components_layout.add_widget(self._add_component_button)
+        self._add_component_button = self._create_add_button(target_layout=self._components_layout,
+                                                             on_press=self._add_empty_component)
 
     def _select_component(self, selected):
         self._component_category = selected.component_category
@@ -189,7 +214,7 @@ class PCSpecApp(App):
         self._create_spec_params_buttons()
         self._selected_component_button = selected
         self._selected_spec_param_button = None
-        self._create_remove_buttons()
+        self._create_action_buttons()
 
     def _create_spec_params_buttons(self):
         self._spec_params_buttons.clear()
@@ -199,7 +224,7 @@ class PCSpecApp(App):
             self._create_spec_param_button(spec_param_name, spec_param_value)
 
         self._add_spec_param_button = self._create_add_button(target_layout=self._spec_layout,
-                                                              on_press=self._add_empty_spec)
+                                                              on_press=self._add_empty_spec_param)
 
     def _create_spec_param_button(self, spec_param_name, spec_param_value):
         button_text = spec_param_value if spec_param_name.lower() == 'name' \
@@ -213,11 +238,12 @@ class PCSpecApp(App):
         self._spec_params_buttons.append(spec_param_button)
         self._spec_layout.add_widget(spec_param_button)
 
-    def _add_empty_spec(self, _):
+    def _add_empty_spec_param(self, _):
         self._spec_layout.remove_widget(self._add_spec_param_button)
         spec_param_text_input = TextInput(multiline=False)
         spec_param_text_input.background_color = self._colors['mint']
         spec_param_text_input.bind(on_text_validate=self._save_spec_param)
+        self._add_component_button = spec_param_text_input
         self._spec_layout.add_widget(spec_param_text_input)
 
     def _save_spec_param(self, spec_param_text_input):
@@ -237,14 +263,15 @@ class PCSpecApp(App):
         self._save_store()
         self._spec_layout.remove_widget(spec_param_text_input)
         self._create_spec_param_button(spec_param_name=spec_param_name, spec_param_value=spec_param_value)
-        self._spec_layout.add_widget(self._add_spec_param_button)
+        self._add_spec_param_button = self._create_add_button(target_layout=self._spec_layout,
+                                                              on_press=self._add_empty_spec_param)
 
     def _select_spec_param(self, selected):
         self._spec_param_name = selected.spec_param_name
         self._spec_param_value = selected.spec_param_value
         self._color_buttons(buttons=self._spec_params_buttons, selected_button=selected)
         self._selected_spec_param_button = selected
-        self._create_remove_buttons()
+        self._create_action_buttons()
 
     def _create_add_button(self, target_layout, on_press):
         add_button = Button(text='+',
@@ -254,24 +281,63 @@ class PCSpecApp(App):
         target_layout.add_widget(add_button)
         return add_button
 
-    def _create_remove_buttons(self):
-        self._menu_layout.clear_widgets()
+    def _create_action_buttons(self):
+        self._pc_actions_layout.clear_widgets()
+        self._component_actions_layout.clear_widgets()
+        self._spec_param_actions_layout.clear_widgets()
+
+        symbols = {'remove': 'X',
+                   'up': '^',
+                   'down': 'v'}
 
         if self._selected_pc_button:
-            self._create_remove_button(item_type='PC', on_press=self._remove_pc)
+            self._create_pc_action_buttons(symbols)
 
         if self._selected_component_button:
-            self._create_remove_button(item_type='component', on_press=self._remove_component)
+            self._create_component_action_buttons(symbols)
 
         if self._selected_spec_param_button:
-            self._create_remove_button(item_type='spec param', on_press=self._remove_spec_param)
+            self._create_spec_param_action_buttons(symbols)
 
-    def _create_remove_button(self, item_type, on_press):
-        remove_button = Button(text=f'Remove {item_type}',
+    def _create_pc_action_buttons(self, symbols):
+        self._create_action_button(target_layout=self._pc_actions_layout,
+                                   text=symbols['remove'],
+                                   on_press=self._remove_pc)
+        self._create_action_button(target_layout=self._pc_actions_layout,
+                                   text=symbols['up'],
+                                   on_press=self._move_pc_up)
+        self._create_action_button(target_layout=self._pc_actions_layout,
+                                   text=symbols['down'],
+                                   on_press=self._move_pc_down)
+
+    def _create_component_action_buttons(self, symbols):
+        self._create_action_button(target_layout=self._component_actions_layout,
+                                   text=symbols['remove'],
+                                   on_press=self._remove_component)
+        self._create_action_button(target_layout=self._component_actions_layout,
+                                   text=symbols['up'],
+                                   on_press=self._move_component_up)
+        self._create_action_button(target_layout=self._component_actions_layout,
+                                   text=symbols['down'],
+                                   on_press=self._move_component_down)
+
+    def _create_spec_param_action_buttons(self, symbols):
+        self._create_action_button(target_layout=self._spec_param_actions_layout,
+                                   text=symbols['remove'],
+                                   on_press=self._remove_spec_param)
+        self._create_action_button(target_layout=self._spec_param_actions_layout,
+                                   text=symbols['up'],
+                                   on_press=self._move_spec_param_up)
+        self._create_action_button(target_layout=self._spec_param_actions_layout,
+                                   text=symbols['down'],
+                                   on_press=self._move_spec_param_down)
+
+    def _create_action_button(self, target_layout, text, on_press):
+        action_button = Button(text=text,
                                background_color=self._colors['mint'],
                                color=self._colors['black'])
-        remove_button.bind(on_press=on_press)
-        self._menu_layout.add_widget(remove_button)
+        action_button.bind(on_press=on_press)
+        target_layout.add_widget(action_button)
 
     def _remove_pc(self, _):
         self._store.remove_pc(self._pc.name)
@@ -283,6 +349,7 @@ class PCSpecApp(App):
         self._spec_param_name = None
         self._spec_param_value = None
 
+        self._pcs_buttons.remove(self._selected_pc_button)
         self._pcs_layout.remove_widget(self._selected_pc_button)
         self._components_layout.clear_widgets()
         self._spec_layout.clear_widgets()
@@ -290,7 +357,7 @@ class PCSpecApp(App):
         self._selected_pc_button = None
         self._selected_component_button = None
         self._selected_spec_param_button = None
-        self._create_remove_buttons()
+        self._create_action_buttons()
 
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
@@ -301,12 +368,13 @@ class PCSpecApp(App):
         self._spec_param_name = None
         self._spec_param_value = None
 
+        self._components_buttons.remove(self._selected_component_button)
         self._components_layout.remove_widget(self._selected_component_button)
         self._spec_layout.clear_widgets()
 
         self._selected_component_button = None
         self._selected_spec_param_button = None
-        self._create_remove_buttons()
+        self._create_action_buttons()
 
     def _remove_spec_param(self, _):
         self._pc.remove_spec_param(self._component_category, self._spec_param_name)
@@ -315,10 +383,40 @@ class PCSpecApp(App):
         self._spec_param_name = None
         self._spec_param_value = None
 
+        self._spec_params_buttons.remove(self._selected_spec_param_button)
         self._spec_layout.remove_widget(self._selected_spec_param_button)
 
         self._selected_spec_param_button = None
-        self._create_remove_buttons()
+        self._create_action_buttons()
+
+    def _move_pc_up(self, _):
+        current_button_id = self._pcs_buttons.index(self._selected_pc_button)
+        new_button_id = current_button_id - 1
+
+        if new_button_id >= 0:
+            self._store.move_pc_up(name=self._pc.name)
+            self._pcs_buttons.remove(self._selected_pc_button)
+            self._pcs_buttons.insert(new_button_id, self._selected_pc_button)
+            self._pcs_layout.clear_widgets()
+
+            for pc_button in self._pcs_buttons:
+                self._pcs_layout.add_widget(pc_button)
+            self._pcs_layout.add_widget(self._add_pc_button)
+
+    def _move_pc_down(self, _):
+        pass
+
+    def _move_component_up(self, _):
+        pass
+
+    def _move_component_down(self, _):
+        pass
+
+    def _move_spec_param_up(self, _):
+        pass
+
+    def _move_spec_param_down(self, _):
+        pass
 
     def _save_store(self):
         save_store(self._store, target_dir=self._store_dir_path)
