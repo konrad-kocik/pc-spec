@@ -395,16 +395,25 @@ class PCSpecApp(App):
 
         if new_button_id >= 0:
             self._store.move_pc_up(name=self._pc.name)
-            self._pcs_buttons.remove(self._selected_pc_button)
-            self._pcs_buttons.insert(new_button_id, self._selected_pc_button)
-            self._pcs_layout.clear_widgets()
-
-            for pc_button in self._pcs_buttons:
-                self._pcs_layout.add_widget(pc_button)
-            self._pcs_layout.add_widget(self._add_pc_button)
+            self._move_pc_button(new_button_id=new_button_id)
 
     def _move_pc_down(self, _):
-        pass
+        current_button_id = self._pcs_buttons.index(self._selected_pc_button)
+        new_button_id = current_button_id + 1
+
+        if new_button_id <= len(self._pcs_buttons) - 1:
+            self._store.move_pc_down(name=self._pc.name)
+            self._move_pc_button(new_button_id=new_button_id)
+
+    def _move_pc_button(self, new_button_id):
+        self._pcs_buttons.remove(self._selected_pc_button)
+        self._pcs_buttons.insert(new_button_id, self._selected_pc_button)
+        self._pcs_layout.clear_widgets()
+
+        for pc_button in self._pcs_buttons:
+            self._pcs_layout.add_widget(pc_button)
+
+        self._pcs_layout.add_widget(self._add_pc_button)
 
     def _move_component_up(self, _):
         pass
