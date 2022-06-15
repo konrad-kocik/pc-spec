@@ -20,6 +20,12 @@ def pc_with_cpu(pc, cpu, cpu_intel_spec):
 
 
 @fixture
+def pc_with_cpu_and_mobo(pc_with_cpu, mobo):
+    pc_with_cpu.add_component(category=mobo)
+    return pc_with_cpu
+
+
+@fixture
 def cpu():
     return 'cpu'
 
@@ -143,6 +149,28 @@ def test_update_component_when_param_is_there_then_it_is_updated(pc_with_cpu, cp
     assert pc_with_cpu.components == {cpu: {name_name: name_value, freq_name: freq_value}}
 
 
+def test_move_component_up_when_component_not_there_then_nothing_is_moved(pc_with_cpu_and_mobo, ram):
+    components = pc_with_cpu_and_mobo.components
+    pc_with_cpu_and_mobo.move_component_up(category=ram)
+    assert pc_with_cpu_and_mobo.components == components
+
+
+def test_move_component_up_when_component_is_there_then_it_is_moved(pc_with_cpu_and_mobo, cpu, cpu_intel_spec, mobo):
+    reordered_component_categories = [mobo, cpu]
+    reordered_component_specs = [{}, cpu_intel_spec]
+
+    pc_with_cpu_and_mobo.move_component_up(category=mobo)
+
+    __check_components_order(
+        pc_with_cpu_and_mobo.components, reordered_component_categories, reordered_component_specs)
+
+
+def test_move_component_up_when_component_is_on_top_then_nothing_is_moved(pc_with_cpu_and_mobo, cpu):
+    components = pc_with_cpu_and_mobo.components
+    pc_with_cpu_and_mobo.move_component_up(category=cpu)
+    assert pc_with_cpu_and_mobo.components == components
+
+
 def test_remove_spec_param_when_component_not_there_then_nothing_is_removed(pc, cpu, cpu_freq):
     freq_name, _ = cpu_freq
     pc.remove_spec_param(category=cpu, spec_param_name=freq_name)
@@ -184,3 +212,10 @@ def test_has_spec_param_when_spec_param_is_not_there_then_false_is_returned(pc_w
 def test_has_spec_param_when_category_is_not_there_then_false_is_returned(pc, cpu):
     assert pc.has_spec_param(category=cpu, spec_param_name='frequency') is False
     assert pc.has_spec_param(category=cpu.upper(), spec_param_name='frequency') is False
+
+
+def __check_components_order(components_to_check, expected_component_categories, expected_component_specs):
+    for component_id, component in enumerate(components_to_check.items()):
+        component_category, component_spec = component
+        assert component_category == expected_component_categories[component_id]
+        assert component_spec == expected_component_specs[component_id]

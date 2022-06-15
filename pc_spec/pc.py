@@ -75,6 +75,29 @@ class PC:
         if self.__component_exists(category):
             self.__components[category][spec_param_name] = spec_param_value
 
+    def move_component_up(self, category: str):
+        """
+        Moves component up in the PC.
+        If component with given category doesn't exist then nothing will change.
+        If component with given category is on the top then nothing will change.
+        :param category: type of component to be moved up, i.e. 'cpu'
+        """
+        if self.__component_exists(category):
+            old_id = list(self.__components.keys()).index(category)
+
+            if old_id > 0:
+                spec = self.__components[category]
+                new_id = old_id - 1
+                del self.__components[category]
+                reordered_components = {}
+
+                for component_id, component in enumerate(self.__components.items()):
+                    if component_id == new_id:
+                        reordered_components[category] = spec
+                    reordered_components[component[0]] = component[1]
+
+                self.__components = reordered_components
+
     def remove_spec_param(self, category: str, spec_param_name: str):
         """
         Removes given parameter from specification of component from given category.
