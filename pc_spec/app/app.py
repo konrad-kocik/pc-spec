@@ -395,6 +395,7 @@ class PCSpecApp(App):
 
         if new_button_id >= 0:
             self._store.move_pc_up(name=self._pc.name)
+            self._save_store()
             self._move_pc_button(new_button_id=new_button_id)
 
     def _move_pc_down(self, _):
@@ -403,6 +404,7 @@ class PCSpecApp(App):
 
         if new_button_id <= len(self._pcs_buttons) - 1:
             self._store.move_pc_down(name=self._pc.name)
+            self._save_store()
             self._move_pc_button(new_button_id=new_button_id)
 
     def _move_pc_button(self, new_button_id):
