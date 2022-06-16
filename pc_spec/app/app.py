@@ -395,7 +395,7 @@ class PCSpecApp(App):
         if new_button_id >= 0:
             self._store.move_pc_up(name=self._pc.name)
             self._save_store()
-            self._move_pc_button(new_button_id=new_button_id)
+            self._move_selected_pc_button(new_button_id=new_button_id)
 
     def _move_pc_down(self, _):
         current_button_id = self._pcs_buttons.index(self._selected_pc_button)
@@ -404,9 +404,9 @@ class PCSpecApp(App):
         if new_button_id <= len(self._pcs_buttons) - 1:
             self._store.move_pc_down(name=self._pc.name)
             self._save_store()
-            self._move_pc_button(new_button_id=new_button_id)
+            self._move_selected_pc_button(new_button_id=new_button_id)
 
-    def _move_pc_button(self, new_button_id):
+    def _move_selected_pc_button(self, new_button_id):
         self._pcs_buttons.remove(self._selected_pc_button)
         self._pcs_buttons.insert(new_button_id, self._selected_pc_button)
         self._pcs_layout.clear_widgets()
@@ -423,7 +423,7 @@ class PCSpecApp(App):
         if new_button_id >= 0:
             self._pc.move_component_up(category=self._component_category)
             self._save_store()
-            self._move_component_button(new_button_id=new_button_id)
+            self._move_selected_component_button(new_button_id=new_button_id)
 
     def _move_component_down(self, _):
         current_button_id = self._components_buttons.index(self._selected_component_button)
@@ -432,9 +432,9 @@ class PCSpecApp(App):
         if new_button_id <= len(self._components_buttons) - 1:
             self._pc.move_component_down(category=self._component_category)
             self._save_store()
-            self._move_component_button(new_button_id=new_button_id)
+            self._move_selected_component_button(new_button_id=new_button_id)
 
-    def _move_component_button(self, new_button_id):
+    def _move_selected_component_button(self, new_button_id):
         self._components_buttons.remove(self._selected_component_button)
         self._components_buttons.insert(new_button_id, self._selected_component_button)
         self._components_layout.clear_widgets()
