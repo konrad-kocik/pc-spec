@@ -101,6 +101,15 @@ class PC:
             if component_id < len(self.__components) - 1:
                 self.__move_component(category, component_id, shift=1)
 
+    def has_component(self, category: str) -> bool:
+        """
+        Checks whether component from given category exists.
+        Is case-insensitive (i.e. 'cpu' == 'CPU').
+        :param category: type of component to be checked, i.e. 'cpu'
+        :return: True if component from given category exists, False otherwise
+        """
+        return self.__component_exists(category)
+
     def remove_spec_param(self, category: str, spec_param_name: str):
         """
         Removes given parameter from specification of component from given category.
@@ -110,14 +119,20 @@ class PC:
         if self.__spec_param_exist(category, spec_param_name):
             del self.__components[category][spec_param_name]
 
-    def has_component(self, category: str) -> bool:
+    def move_spec_param_up(self, category: str, spec_param_name: str):
         """
-        Checks whether component from given category exists.
-        Is case-insensitive (i.e. 'cpu' == 'CPU').
-        :param category: type of component to be checked, i.e. 'cpu'
-        :return: True if component from given category exists, False otherwise
+        Moves given parameter up in specification of component from given category.
+        If component with given category doesn't exist then nothing will change.
+        If specification parameter with given name doesn't exist then nothing will change.
+        If specification parameter with given name is on the top then nothing will change.
+        :param category: type of component in which specification's parameter will be moved up, i.e. 'cpu'
+        :param spec_param_name: name of specification's parameter which will be moved up, i.e. 'freq'
         """
-        return self.__component_exists(category)
+        if self.__spec_param_exist(category, spec_param_name):
+            spec_param_id = list(self.__components[category].keys()).index(spec_param_name)
+
+            if spec_param_id > 0:
+                self.__move_spec_param(category, spec_param_name, spec_param_id, shift=-1)
 
     def has_spec_param(self, category: str, spec_param_name: str) -> bool:
         """
@@ -134,24 +149,11 @@ class PC:
         categories = [category.lower() for category in self.__components.keys()]
         return category.lower() in categories
 
-    def __move_component(self, moved_category, current_id, shift):
-        new_id = current_id + shift
-        moved_spec = self.__components[moved_category]
-        reordered_components = {}
-
-        for component_id, component in enumerate(self.__components.items()):
-            component_category, component_spec = component
-
-            if component_category != moved_category and shift > 0:
-                reordered_components[component_category] = component_spec
-
-            if component_id == new_id:
-                reordered_components[moved_category] = moved_spec
-
-            if component_category != moved_category and shift < 0:
-                reordered_components[component_category] = component_spec
-
-        self.__components = reordered_components
+    def __move_component(self, category_to_move, current_component_id, shift):
+        self.__components = self.__reorder_dict(dict_to_reorder=self.__components,
+                                                key_to_move=category_to_move,
+                                                new_item_id=current_component_id + shift,
+                                                shift=shift)
 
     def __spec_param_exist(self, category, spec_param_name):
         if not self.__component_exists(category):
@@ -159,3 +161,28 @@ class PC:
 
         spec_param_names = [spec_param_name.lower() for spec_param_name in self.__components[category]]
         return spec_param_name.lower() in spec_param_names
+
+    def __move_spec_param(self, category, spec_param_name_to_move, current_spec_param_id, shift):
+        self.__components[category] = self.__reorder_dict(dict_to_reorder=self.__components[category],
+                                                          key_to_move=spec_param_name_to_move,
+                                                          new_item_id=current_spec_param_id + shift,
+                                                          shift=shift)
+
+    @staticmethod
+    def __reorder_dict(dict_to_reorder, key_to_move, new_item_id, shift):
+        value_to_move = dict_to_reorder[key_to_move]
+        reordered_dict = {}
+
+        for item_id, item in enumerate(dict_to_reorder.items()):
+            key, value = item
+
+            if key != key_to_move and shift > 0:
+                reordered_dict[key] = value
+
+            if item_id == new_item_id:
+                reordered_dict[key_to_move] = value_to_move
+
+            if key != key_to_move and shift < 0:
+                reordered_dict[key] = value
+
+        return reordered_dict

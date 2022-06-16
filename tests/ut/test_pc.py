@@ -69,8 +69,30 @@ def mobo():
 
 
 @fixture
+def pc_with_ram(pc, ram, ram_spec):
+    pc.add_component(category=ram, spec=ram_spec)
+    return pc
+
+
+@fixture
 def ram():
     return 'ram'
+
+
+@fixture
+def ram_spec(ram_name, ram_freq):
+    return {ram_name[0]: ram_name[1],
+            ram_freq[0]: ram_freq[1]}
+
+
+@fixture
+def ram_name():
+    return 'name', 'HyperX Predator RGB'
+
+
+@fixture
+def ram_freq():
+    return 'frequency', '3200 MHz'
 
 
 def test_new_pc_has_name(pc, pc_name):
@@ -161,8 +183,9 @@ def test_move_component_up_when_component_is_there_then_it_is_moved(pc_with_cpu_
 
     pc_with_cpu_and_mobo.move_component_up(category=mobo)
 
-    __check_components_order(
-        pc_with_cpu_and_mobo.components, reordered_component_categories, reordered_component_specs)
+    __check_dict_order(dict_to_check=pc_with_cpu_and_mobo.components,
+                       expected_keys=reordered_component_categories,
+                       expected_values=reordered_component_specs)
 
 
 def test_move_component_up_when_component_is_on_top_then_nothing_is_moved(pc_with_cpu_and_mobo, cpu):
@@ -183,8 +206,9 @@ def test_move_component_down_when_component_is_there_then_it_is_moved(pc_with_cp
 
     pc_with_cpu_and_mobo.move_component_down(category=cpu)
 
-    __check_components_order(
-        pc_with_cpu_and_mobo.components, reordered_component_categories, reordered_component_specs)
+    __check_dict_order(dict_to_check=pc_with_cpu_and_mobo.components,
+                       expected_keys=reordered_component_categories,
+                       expected_values=reordered_component_specs)
 
 
 def test_move_component_down_when_component_is_on_bottom_then_nothing_is_moved(pc_with_cpu_and_mobo, mobo):
@@ -221,6 +245,38 @@ def test_has_component_when_component_is_not_there_then_false_is_returned(pc, cp
     assert pc.has_component(category=cpu.upper()) is False
 
 
+def test_move_spec_param_up_when_component_not_there_then_nothing_is_moved(pc_with_ram, cpu):
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_up(category=cpu, spec_param_name='name')
+    assert pc_with_ram.components == components
+
+
+def test_move_spec_param_up_when_spec_param_not_there_then_nothing_is_moved(pc_with_ram, ram):
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_up(category=ram, spec_param_name='latency')
+    assert pc_with_ram.components == components
+
+
+def test_move_spec_param_up_when_spec_param_is_there_then_it_is_moved(pc_with_ram, ram, ram_name, ram_freq):
+    ram_freq_name, ram_freq_value = ram_freq
+    ram_name_name, ram_name_value = ram_name
+    reordered_spec_names = [ram_freq_name, ram_name_name]
+    reordered_spec_values = [ram_freq_value, ram_name_value]
+
+    pc_with_ram.move_spec_param_up(category=ram, spec_param_name=ram_freq_name)
+
+    __check_dict_order(dict_to_check=pc_with_ram.components[ram],
+                       expected_keys=reordered_spec_names,
+                       expected_values=reordered_spec_values)
+
+
+def test_move_spec_param_up_when_spec_param_is_on_top_then_nothing_is_moved(pc_with_ram, ram, ram_name):
+    ram_name_name, _ = ram_name
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_up(category=ram, spec_param_name=ram_name_name)
+    assert pc_with_ram.components == components
+
+
 def test_has_spec_param_when_spec_param_is_there_then_true_is_returned(pc_with_cpu, cpu):
     assert pc_with_cpu.has_spec_param(category=cpu, spec_param_name='name') is True
     assert pc_with_cpu.has_spec_param(category=cpu, spec_param_name='NAME') is True
@@ -236,11 +292,11 @@ def test_has_spec_param_when_category_is_not_there_then_false_is_returned(pc, cp
     assert pc.has_spec_param(category=cpu.upper(), spec_param_name='frequency') is False
 
 
-def __check_components_order(components_to_check, expected_component_categories, expected_component_specs):
-    assert len(components_to_check) == len(expected_component_categories)
-    assert len(components_to_check) == len(expected_component_specs)
+def __check_dict_order(dict_to_check, expected_keys, expected_values):
+    assert len(dict_to_check) == len(expected_keys)
+    assert len(dict_to_check) == len(expected_values)
 
-    for component_id, component in enumerate(components_to_check.items()):
-        component_category, component_spec = component
-        assert component_category == expected_component_categories[component_id]
-        assert component_spec == expected_component_specs[component_id]
+    for item_id, item in enumerate(dict_to_check.items()):
+        key, value = item
+        assert key == expected_keys[item_id]
+        assert value == expected_values[item_id]
