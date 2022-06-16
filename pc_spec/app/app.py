@@ -4,7 +4,6 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.uix.textinput import TextInput
 
 from pc_spec.data import load_store, save_store, backup_store
