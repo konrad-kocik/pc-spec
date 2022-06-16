@@ -131,7 +131,7 @@ class PC:
 
     def move_spec_param_up(self, category: str, spec_param_name: str):
         """
-        Moves given parameter up in specification of component from given category.
+        Moves parameter with given name up in specification of component from given category.
         If component with given category doesn't exist then nothing will change.
         If specification parameter with given name doesn't exist then nothing will change.
         If specification parameter with given name is on the top then nothing will change.
@@ -139,11 +139,12 @@ class PC:
         :param spec_param_name: name of specification's parameter which will be moved up, i.e. 'freq'
         """
         if self.__spec_param_exist(category, spec_param_name):
-            spec_param_id = list(self.__components[category].keys()).index(spec_param_name)
+            spec_params = self.__components[category]
+            spec_param_id = list(spec_params.keys()).index(spec_param_name)
 
             if spec_param_id > 0:
                 shift = -1
-                self.__components[category] = reorder_dict(dict_to_reorder=self.__components[category],
+                self.__components[category] = reorder_dict(dict_to_reorder=spec_params,
                                                            key_to_move=spec_param_name,
                                                            new_item_id=spec_param_id + shift,
                                                            shift=shift)
