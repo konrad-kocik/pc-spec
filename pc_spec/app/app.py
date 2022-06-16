@@ -243,7 +243,7 @@ class PCSpecApp(App):
         spec_param_text_input = TextInput(multiline=False)
         spec_param_text_input.background_color = self._colors['mint']
         spec_param_text_input.bind(on_text_validate=self._save_spec_param)
-        self._add_component_button = spec_param_text_input
+        self._add_spec_param_button = spec_param_text_input
         self._spec_layout.add_widget(spec_param_text_input)
 
     def _save_spec_param(self, spec_param_text_input):
