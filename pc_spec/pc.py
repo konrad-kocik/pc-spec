@@ -88,7 +88,11 @@ class PC:
             component_id = list(self.__components.keys()).index(category)
 
             if component_id > 0:
-                self.__move_component(category, component_id, shift=-1)
+                shift = -1
+                self.__components = reorder_dict(dict_to_reorder=self.__components,
+                                                 key_to_move=category,
+                                                 new_item_id=component_id + shift,
+                                                 shift=shift)
 
     def move_component_down(self, category: str):
         """
@@ -101,7 +105,11 @@ class PC:
             component_id = list(self.__components.keys()).index(category)
 
             if component_id < len(self.__components) - 1:
-                self.__move_component(category, component_id, shift=1)
+                shift = 1
+                self.__components = reorder_dict(dict_to_reorder=self.__components,
+                                                 key_to_move=category,
+                                                 new_item_id=component_id + shift,
+                                                 shift=shift)
 
     def has_component(self, category: str) -> bool:
         """
@@ -134,7 +142,11 @@ class PC:
             spec_param_id = list(self.__components[category].keys()).index(spec_param_name)
 
             if spec_param_id > 0:
-                self.__move_spec_param(category, spec_param_name, spec_param_id, shift=-1)
+                shift = -1
+                self.__components[category] = reorder_dict(dict_to_reorder=self.__components[category],
+                                                           key_to_move=spec_param_name,
+                                                           new_item_id=spec_param_id + shift,
+                                                           shift=shift)
 
     def has_spec_param(self, category: str, spec_param_name: str) -> bool:
         """
@@ -151,21 +163,9 @@ class PC:
         categories = [category.lower() for category in self.__components.keys()]
         return category.lower() in categories
 
-    def __move_component(self, category_to_move, current_component_id, shift):
-        self.__components = reorder_dict(dict_to_reorder=self.__components,
-                                         key_to_move=category_to_move,
-                                         new_item_id=current_component_id + shift,
-                                         shift=shift)
-
     def __spec_param_exist(self, category, spec_param_name):
         if not self.__component_exists(category):
             return False
 
         spec_param_names = [spec_param_name.lower() for spec_param_name in self.__components[category]]
         return spec_param_name.lower() in spec_param_names
-
-    def __move_spec_param(self, category, spec_param_name_to_move, current_spec_param_id, shift):
-        self.__components[category] = reorder_dict(dict_to_reorder=self.__components[category],
-                                                   key_to_move=spec_param_name_to_move,
-                                                   new_item_id=current_spec_param_id + shift,
-                                                   shift=shift)
