@@ -1,5 +1,7 @@
 from typing import Dict, Optional
 
+from pc_spec.utils import reorder_dict
+
 Spec = Dict[str, str]  # pragma: no mutate
 Components = Dict[str, Spec]  # pragma: no mutate
 
@@ -150,10 +152,10 @@ class PC:
         return category.lower() in categories
 
     def __move_component(self, category_to_move, current_component_id, shift):
-        self.__components = self.__reorder_dict(dict_to_reorder=self.__components,
-                                                key_to_move=category_to_move,
-                                                new_item_id=current_component_id + shift,
-                                                shift=shift)
+        self.__components = reorder_dict(dict_to_reorder=self.__components,
+                                         key_to_move=category_to_move,
+                                         new_item_id=current_component_id + shift,
+                                         shift=shift)
 
     def __spec_param_exist(self, category, spec_param_name):
         if not self.__component_exists(category):
@@ -163,26 +165,7 @@ class PC:
         return spec_param_name.lower() in spec_param_names
 
     def __move_spec_param(self, category, spec_param_name_to_move, current_spec_param_id, shift):
-        self.__components[category] = self.__reorder_dict(dict_to_reorder=self.__components[category],
-                                                          key_to_move=spec_param_name_to_move,
-                                                          new_item_id=current_spec_param_id + shift,
-                                                          shift=shift)
-
-    @staticmethod
-    def __reorder_dict(dict_to_reorder, key_to_move, new_item_id, shift):
-        value_to_move = dict_to_reorder[key_to_move]
-        reordered_dict = {}
-
-        for item_id, item in enumerate(dict_to_reorder.items()):
-            key, value = item
-
-            if key != key_to_move and shift > 0:
-                reordered_dict[key] = value
-
-            if item_id == new_item_id:
-                reordered_dict[key_to_move] = value_to_move
-
-            if key != key_to_move and shift < 0:
-                reordered_dict[key] = value
-
-        return reordered_dict
+        self.__components[category] = reorder_dict(dict_to_reorder=self.__components[category],
+                                                   key_to_move=spec_param_name_to_move,
+                                                   new_item_id=current_spec_param_id + shift,
+                                                   shift=shift)
