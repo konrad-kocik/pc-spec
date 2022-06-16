@@ -277,6 +277,38 @@ def test_move_spec_param_up_when_spec_param_is_on_top_then_nothing_is_moved(pc_w
     assert pc_with_ram.components == components
 
 
+def test_move_spec_param_down_when_component_not_there_then_nothing_is_moved(pc_with_ram, cpu):
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_down(category=cpu, spec_param_name='name')
+    assert pc_with_ram.components == components
+
+
+def test_move_spec_param_down_when_spec_param_not_there_then_nothing_is_moved(pc_with_ram, ram):
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_down(category=ram, spec_param_name='latency')
+    assert pc_with_ram.components == components
+
+
+def test_move_spec_param_down_when_spec_param_is_there_then_it_is_moved(pc_with_ram, ram, ram_name, ram_freq):
+    ram_freq_name, ram_freq_value = ram_freq
+    ram_name_name, ram_name_value = ram_name
+    reordered_spec_names = [ram_freq_name, ram_name_name]
+    reordered_spec_values = [ram_freq_value, ram_name_value]
+
+    pc_with_ram.move_spec_param_down(category=ram, spec_param_name=ram_name_name)
+
+    __check_dict_order(dict_to_check=pc_with_ram.components[ram],
+                       expected_keys=reordered_spec_names,
+                       expected_values=reordered_spec_values)
+
+
+def test_move_spec_param_down_when_spec_param_is_on_bottom_then_nothing_is_moved(pc_with_ram, ram, ram_freq):
+    ram_freq_name, _ = ram_freq
+    components = pc_with_ram.components
+    pc_with_ram.move_spec_param_down(category=ram, spec_param_name=ram_freq_name)
+    assert pc_with_ram.components == components
+
+
 def test_has_spec_param_when_spec_param_is_there_then_true_is_returned(pc_with_cpu, cpu):
     assert pc_with_cpu.has_spec_param(category=cpu, spec_param_name='name') is True
     assert pc_with_cpu.has_spec_param(category=cpu, spec_param_name='NAME') is True

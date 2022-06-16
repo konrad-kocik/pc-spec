@@ -451,12 +451,18 @@ class PCSpecApp(App):
         if new_button_id >= 0:
             self._pc.move_spec_param_up(category=self._component_category, spec_param_name=self._spec_param_name)
             self._save_store()
-            self._move_spec_param_button(new_button_id=new_button_id)
+            self._move_selected_spec_param_button(new_button_id=new_button_id)
 
     def _move_spec_param_down(self, _):
-        pass
+        current_button_id = self._spec_params_buttons.index(self._selected_spec_param_button)
+        new_button_id = current_button_id + 1
 
-    def _move_spec_param_button(self, new_button_id):
+        if new_button_id <= len(self._spec_params_buttons) - 1:
+            self._pc.move_spec_param_down(category=self._component_category, spec_param_name=self._spec_param_name)
+            self._save_store()
+            self._move_selected_spec_param_button(new_button_id=new_button_id)
+
+    def _move_selected_spec_param_button(self, new_button_id):
         self._spec_params_buttons.remove(self._selected_spec_param_button)
         self._spec_params_buttons.insert(new_button_id, self._selected_spec_param_button)
         self._spec_layout.clear_widgets()

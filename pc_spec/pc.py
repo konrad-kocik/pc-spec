@@ -148,6 +148,26 @@ class PC:
                                                            new_item_id=spec_param_id + shift,
                                                            shift=shift)
 
+    def move_spec_param_down(self, category: str, spec_param_name: str):
+        """
+        Moves parameter with given name down in specification of component from given category.
+        If component with given category doesn't exist then nothing will change.
+        If specification parameter with given name doesn't exist then nothing will change.
+        If specification parameter with given name is on the bottom then nothing will change.
+        :param category: type of component in which specification's parameter will be moved down, i.e. 'cpu'
+        :param spec_param_name: name of specification's parameter which will be moved down, i.e. 'freq'
+        """
+        if self.__spec_param_exist(category, spec_param_name):
+            spec_params = self.__components[category]
+            spec_param_id = list(spec_params.keys()).index(spec_param_name)
+
+            if spec_param_id < len(spec_params) - 1:
+                shift = 1
+                self.__components[category] = reorder_dict(dict_to_reorder=spec_params,
+                                                           key_to_move=spec_param_name,
+                                                           new_item_id=spec_param_id + shift,
+                                                           shift=shift)
+
     def has_spec_param(self, category: str, spec_param_name: str) -> bool:
         """
         Checks whether specification of component from given category has parameter with given name.
