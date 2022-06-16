@@ -427,7 +427,13 @@ class PCSpecApp(App):
             self._move_component_button(new_button_id=new_button_id)
 
     def _move_component_down(self, _):
-        pass
+        current_button_id = self._components_buttons.index(self._selected_component_button)
+        new_button_id = current_button_id + 1
+
+        if new_button_id <= len(self._components_buttons) - 1:
+            self._pc.move_component_down(category=self._component_category)
+            self._save_store()
+            self._move_component_button(new_button_id=new_button_id)
 
     def _move_component_button(self, new_button_id):
         self._components_buttons.remove(self._selected_component_button)

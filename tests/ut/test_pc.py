@@ -171,6 +171,28 @@ def test_move_component_up_when_component_is_on_top_then_nothing_is_moved(pc_wit
     assert pc_with_cpu_and_mobo.components == components
 
 
+def test_move_component_down_when_component_not_there_then_nothing_is_moved(pc_with_cpu_and_mobo, ram):
+    components = pc_with_cpu_and_mobo.components
+    pc_with_cpu_and_mobo.move_component_down(category=ram)
+    assert pc_with_cpu_and_mobo.components == components
+
+
+def test_move_component_down_when_component_is_there_then_it_is_moved(pc_with_cpu_and_mobo, cpu, cpu_intel_spec, mobo):
+    reordered_component_categories = [mobo, cpu]
+    reordered_component_specs = [{}, cpu_intel_spec]
+
+    pc_with_cpu_and_mobo.move_component_down(category=cpu)
+
+    __check_components_order(
+        pc_with_cpu_and_mobo.components, reordered_component_categories, reordered_component_specs)
+
+
+def test_move_component_down_when_component_is_on_bottom_then_nothing_is_moved(pc_with_cpu_and_mobo, mobo):
+    components = pc_with_cpu_and_mobo.components
+    pc_with_cpu_and_mobo.move_component_down(category=mobo)
+    assert pc_with_cpu_and_mobo.components == components
+
+
 def test_remove_spec_param_when_component_not_there_then_nothing_is_removed(pc, cpu, cpu_freq):
     freq_name, _ = cpu_freq
     pc.remove_spec_param(category=cpu, spec_param_name=freq_name)
@@ -215,6 +237,9 @@ def test_has_spec_param_when_category_is_not_there_then_false_is_returned(pc, cp
 
 
 def __check_components_order(components_to_check, expected_component_categories, expected_component_specs):
+    assert len(components_to_check) == len(expected_component_categories)
+    assert len(components_to_check) == len(expected_component_specs)
+
     for component_id, component in enumerate(components_to_check.items()):
         component_category, component_spec = component
         assert component_category == expected_component_categories[component_id]

@@ -83,20 +83,23 @@ class PC:
         :param category: type of component to be moved up, i.e. 'cpu'
         """
         if self.__component_exists(category):
-            old_id = list(self.__components.keys()).index(category)
+            component_id = list(self.__components.keys()).index(category)
 
-            if old_id > 0:
-                spec = self.__components[category]
-                new_id = old_id - 1
-                del self.__components[category]
-                reordered_components = {}
+            if component_id > 0:
+                self.__move_component(category, component_id, shift=-1)
 
-                for component_id, component in enumerate(self.__components.items()):
-                    if component_id == new_id:
-                        reordered_components[category] = spec
-                    reordered_components[component[0]] = component[1]
+    def move_component_down(self, category: str):
+        """
+        Moves component down in the PC.
+        If component with given category doesn't exist then nothing will change.
+        If component with given category is on the bottom then nothing will change.
+        :param category: type of component to be moved down, i.e. 'cpu'
+        """
+        if self.__component_exists(category):
+            component_id = list(self.__components.keys()).index(category)
 
-                self.__components = reordered_components
+            if component_id < len(self.__components) - 1:
+                self.__move_component(category, component_id, shift=1)
 
     def remove_spec_param(self, category: str, spec_param_name: str):
         """
@@ -130,6 +133,25 @@ class PC:
     def __component_exists(self, category: str) -> bool:
         categories = [category.lower() for category in self.__components.keys()]
         return category.lower() in categories
+
+    def __move_component(self, moved_category, current_id, shift):
+        new_id = current_id + shift
+        moved_spec = self.__components[moved_category]
+        reordered_components = {}
+
+        for component_id, component in enumerate(self.__components.items()):
+            component_category, component_spec = component
+
+            if component_category != moved_category and shift > 0:
+                reordered_components[component_category] = component_spec
+
+            if component_id == new_id:
+                reordered_components[moved_category] = moved_spec
+
+            if component_category != moved_category and shift < 0:
+                reordered_components[component_category] = component_spec
+
+        self.__components = reordered_components
 
     def __spec_param_exist(self, category, spec_param_name):
         if not self.__component_exists(category):
