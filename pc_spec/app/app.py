@@ -154,13 +154,14 @@ class PCSpecApp(App):
                                                       on_press=self._add_empty_pc)
 
     def _select_pc(self, selected):
-        self._pc = self._store.get_pc(selected.pc_name)
-        self._color_buttons(buttons=self._pcs_buttons, selected_button=selected)
-        self._create_components_buttons()
-        self._selected_pc_button = selected
-        self._selected_component_button = None
-        self._selected_spec_param_button = None
-        self._create_action_buttons()
+        if selected is not self._selected_pc_button:
+            self._pc = self._store.get_pc(selected.pc_name)
+            self._color_buttons(buttons=self._pcs_buttons, selected_button=selected)
+            self._create_components_buttons()
+            self._selected_pc_button = selected
+            self._selected_component_button = None
+            self._selected_spec_param_button = None
+            self._create_action_buttons()
 
     def _create_components_buttons(self):
         self._components_buttons.clear()
@@ -207,13 +208,14 @@ class PCSpecApp(App):
                                                              on_press=self._add_empty_component)
 
     def _select_component(self, selected):
-        self._component_category = selected.component_category
-        self._component = self._pc.components[selected.component_category]
-        self._color_buttons(buttons=self._components_buttons, selected_button=selected)
-        self._create_spec_params_buttons()
-        self._selected_component_button = selected
-        self._selected_spec_param_button = None
-        self._create_action_buttons()
+        if selected is not self._selected_component_button:
+            self._component_category = selected.component_category
+            self._component = self._pc.components[selected.component_category]
+            self._color_buttons(buttons=self._components_buttons, selected_button=selected)
+            self._create_spec_params_buttons()
+            self._selected_component_button = selected
+            self._selected_spec_param_button = None
+            self._create_action_buttons()
 
     def _create_spec_params_buttons(self):
         self._spec_params_buttons.clear()
@@ -268,11 +270,12 @@ class PCSpecApp(App):
                                                               on_press=self._add_empty_spec_param)
 
     def _select_spec_param(self, selected):
-        self._spec_param_name = selected.spec_param_name
-        self._spec_param_value = selected.spec_param_value
-        self._color_buttons(buttons=self._spec_params_buttons, selected_button=selected)
-        self._selected_spec_param_button = selected
-        self._create_action_buttons()
+        if selected is not self._selected_spec_param_button:
+            self._spec_param_name = selected.spec_param_name
+            self._spec_param_value = selected.spec_param_value
+            self._color_buttons(buttons=self._spec_params_buttons, selected_button=selected)
+            self._selected_spec_param_button = selected
+            self._create_action_buttons()
 
     def _create_add_button(self, target_layout, on_press):
         add_button = Button(text='+',
