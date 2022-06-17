@@ -142,7 +142,7 @@ class PCSpecApp(App):
     def _save_pc(self, pc_text_input):
         pc_name = pc_text_input.text
 
-        if self._store.has_pc(name=pc_name):
+        if not pc_name or self._store.has_pc(name=pc_name):
             self._show_error(pc_text_input)
             return
 
@@ -195,7 +195,7 @@ class PCSpecApp(App):
     def _save_component(self, component_text_input):
         component_category = component_text_input.text
 
-        if self._pc.has_component(category=component_category):
+        if not component_category or self._pc.has_component(category=component_category):
             self._show_error(component_text_input)
             return
 
@@ -254,7 +254,9 @@ class PCSpecApp(App):
         spec_param_name = spec_param_name.rstrip()
         spec_param_value = spec_param_value.lstrip()
 
-        if self._pc.has_spec_param(category=self._component_category, spec_param_name=spec_param_name):
+        if not spec_param_name \
+                or not spec_param_value \
+                or self._pc.has_spec_param(category=self._component_category, spec_param_name=spec_param_name):
             self._show_error(spec_param_text_input)
             return
 
