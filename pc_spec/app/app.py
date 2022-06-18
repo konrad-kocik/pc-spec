@@ -5,6 +5,7 @@ from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
+from kivy.uix.popup import Popup
 
 from pc_spec.data import load_store, save_store, backup_store
 
@@ -52,6 +53,8 @@ class PCSpecApp(App):
         self._component = None
         self._spec_param_name = None
         self._spec_param_value = None
+
+        self._popup = None
 
     def build(self):
         self._create_layouts()
@@ -306,7 +309,7 @@ class PCSpecApp(App):
     def _create_pc_action_buttons(self, symbols):
         self._create_action_button(target_layout=self._pc_actions_layout,
                                    text=symbols['remove'],
-                                   on_press=self._remove_pc)
+                                   on_press=self._confirm_pc_removal)
         self._create_action_button(target_layout=self._pc_actions_layout,
                                    text=symbols['up'],
                                    on_press=self._move_pc_up)
@@ -343,6 +346,11 @@ class PCSpecApp(App):
         action_button.bind(on_press=on_press)
         target_layout.add_widget(action_button)
 
+    def _confirm_pc_removal(self, _):
+        popup_button_actions = {'Yes': self._remove_pc,
+                                'No': self._close_popup}
+        self._open_popup('Really remove?', popup_button_actions)
+
     def _remove_pc(self, _):
         self._store.remove_pc(self._pc.name)
         self._save_store()
@@ -362,6 +370,8 @@ class PCSpecApp(App):
         self._selected_component_button = None
         self._selected_spec_param_button = None
         self._create_action_buttons()
+
+        self._close_popup(None)
 
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
@@ -486,3 +496,25 @@ class PCSpecApp(App):
 
     def _show_error(self, widget):
         widget.foreground_color = self._colors['red']
+
+    def _open_popup(self, title, button_actions):
+        confirmation_buttons = BoxLayout()
+
+        for button_text, button_action in button_actions.items():
+            confirmation_button = Button(text=button_text,
+                                         background_color=self._colors['mint'],
+                                         color=self._colors['black'])
+            confirmation_button.bind(on_press=button_action)
+            confirmation_buttons.add_widget(confirmation_button)
+
+        confirmation_popup = Popup(title=title,
+                                   content=confirmation_buttons,
+                                   auto_dismiss=False,
+                                   size_hint=(None, None),
+                                   size=(300, 100))
+        self._popup = confirmation_popup
+        confirmation_popup.open()
+
+    def _close_popup(self, _):
+        self._popup.dismiss()
+        self._popup = None
