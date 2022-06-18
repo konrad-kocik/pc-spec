@@ -74,7 +74,7 @@ class PCSpecApp(App):
         self._actions_layout = BoxLayout(padding=padding,
                                          spacing=border_size,
                                          orientation='horizontal',
-                                         size_hint=(1, 0.15))
+                                         size_hint=(1, 0.1))
         self._main_layout.add_widget(self._actions_layout)
 
         self._pc_actions_layout = BoxLayout(padding=padding,
@@ -98,7 +98,7 @@ class PCSpecApp(App):
         self._store_layout = BoxLayout(padding=padding,
                                        spacing=border_size,
                                        orientation='horizontal',
-                                       size_hint=(1, 0.85))
+                                       size_hint=(1, 0.9))
         self._main_layout.add_widget(self._store_layout)
 
         self._pcs_layout = BoxLayout(padding=padding,
