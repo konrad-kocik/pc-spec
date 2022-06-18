@@ -320,7 +320,7 @@ class PCSpecApp(App):
     def _create_component_action_buttons(self, symbols):
         self._create_action_button(target_layout=self._component_actions_layout,
                                    text=symbols['remove'],
-                                   on_press=self._remove_component)
+                                   on_press=self._confirm_component_removal)
         self._create_action_button(target_layout=self._component_actions_layout,
                                    text=symbols['up'],
                                    on_press=self._move_component_up)
@@ -373,6 +373,11 @@ class PCSpecApp(App):
 
         self._close_popup(None)
 
+    def _confirm_component_removal(self, _):
+        popup_button_actions = {'Yes': self._remove_component,
+                                'No': self._close_popup}
+        self._open_popup('Really remove?', popup_button_actions)
+
     def _remove_component(self, _):
         self._pc.remove_component(self._component_category)
         self._save_store()
@@ -389,6 +394,8 @@ class PCSpecApp(App):
         self._selected_component_button = None
         self._selected_spec_param_button = None
         self._create_action_buttons()
+
+        self._close_popup(None)
 
     def _remove_spec_param(self, _):
         self._pc.remove_spec_param(self._component_category, self._spec_param_name)
